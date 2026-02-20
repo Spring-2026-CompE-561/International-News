@@ -1,0 +1,564 @@
+openapi: 3.0.3
+info:
+  title: International News API
+  version: '1.0'
+  description: >
+    REST API for International News — a web applicatio that allows user to search for news articles based on region, perspective as well as compare these articles and see the sources.
+servers:
+  - url: http://localhost:8000
+    description: Local FastAPI development server
+
+paths:
+  /signup:
+    post:
+      summary: Register a new user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  user:
+                    $ref: "#/components/schemas/User"
+        "409":
+          description: Email or username already exists
+
+  /login:
+    post:
+      summary: Login and receive a JWT token
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  userId:
+                    type: integer
+  /users/{id}:
+    get:
+      summary: Retrieve user profile
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+
+    put:
+      summary: Update user profile
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+    delete:
+      summary: Delete a user account
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+  /articles:
+    get:
+      summary: Search and retrieve news articles
+      tags: [Articles]
+      description: >
+        Returns articles filtered by topic, region, perspective, or keyword.
+        Supports pagination.
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Keyword search
+          example: climate summit
+        - name: topic
+          in: query
+          schema:
+            type: string
+            enum: [world, politics, economy, conflict, tech]
+          description: Filter by topic category
+        - name: region_id
+          in: query
+          schema:
+            type: integer
+          description: Filter by region
+        - name: perspective_id
+          in: query
+          schema:
+            type: integer
+          description: Filter by perspective
+        - name: skip
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: List of articles matching filters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 84
+                  articles:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Article"
+
+  /articles/{id}:
+    get:
+      summary: Get a single article by ID
+      tags: [Articles]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Full article details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "404":
+          description: Article not found
+
+  /articles/compare:
+    get:
+      summary: Compare coverage of a topic across perspectives and regions
+      tags: [Articles]
+      description: >
+        Returns articles on the same topic grouped by perspective, enabling the
+        side-by-side comparison view. This is the core feature of the app.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Topic or event to compare
+          example: ukraine war
+        - name: topic
+          in: query
+          schema:
+            type: string
+            enum: [world, politics, economy, conflict, tech]
+      responses:
+        "200":
+          description: Articles grouped by perspective for comparison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                    example: ukraine war
+                  perspectives:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        perspective:
+                          $ref: "#/components/schemas/Perspective"
+                        articles:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/Article"
+  /sources:
+    get:
+      summary: List all news sources
+      tags: [Sources]
+      parameters:
+        - name: region_id
+          in: query
+          schema:
+            type: integer
+          description: Filter by region
+        - name: perspective_id
+          in: query
+          schema:
+            type: integer
+          description: Filter by perspective
+      responses:
+        "200":
+          description: List of news sources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Source"
+
+  /sources/{id}:
+    get:
+      summary: Get a specific news source
+      tags: [Sources]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Source details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Source"
+        "404":
+          description: Source not found
+  /regions:
+    get:
+      summary: List all geographic regions
+      tags: [Regions]
+      responses:
+        "200":
+          description: List of regions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Region"
+  /perspectives:
+    get:
+      summary: List all available perspectives
+      tags: [Perspectives]
+      responses:
+        "200":
+          description: List of perspectives
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Perspective"
+  /topics:
+    get:
+      summary: List all topic categories
+      tags: [Topics]
+      responses:
+        "200":
+          description: List of topic categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Topic"
+  /bookmarks:
+    get:
+      summary: Get the current user's bookmarked articles
+      tags: [Bookmarks]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of bookmarked articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Bookmark"
+        "401":
+          description: Unauthorized
+
+    post:
+      summary: Bookmark an article
+      tags: [Bookmarks]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [article_id]
+              properties:
+                article_id:
+                  type: integer
+                  example: 42
+      responses:
+        "201":
+          description: Article bookmarked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  bookmark:
+                    $ref: "#/components/schemas/Bookmark"
+
+  /bookmarks/{id}:
+    delete:
+      summary: Remove a bookmark
+      tags: [Bookmarks]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bookmark removed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        "404":
+          description: Bookmark not found
+components:
+  schemas:
+
+    User:
+      type: object
+      description: Registered user of the International News platform
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-17T12:00:00Z"
+
+    Article:
+      type: object
+      description: A news article collected from an international source
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "World Leaders Meet to Discuss Climate Policy"
+        summary:
+          type: string
+          example: "Leaders from 50 nations gathered in Geneva..."
+        url:
+          type: string
+          format: uri
+          example: "https://bbc.com/news/world-climate-summit"
+        image_url:
+          type: string
+          format: uri
+          example: "https://bbc.com/images/climate.jpg"
+        published_at:
+          type: string
+          format: date-time
+          example: "2026-02-15T08:30:00Z"
+        source:
+          $ref: "#/components/schemas/Source"
+        topic:
+          $ref: "#/components/schemas/Topic"
+        region:
+          $ref: "#/components/schemas/Region"
+        perspective:
+          $ref: "#/components/schemas/Perspective"
+
+    Source:
+      type: object
+      description: A news outlet categorized by region and perspective
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "BBC World"
+        country:
+          type: string
+          example: "United Kingdom"
+        website_url:
+          type: string
+          format: uri
+          example: "https://www.bbc.com/news/world"
+        region:
+          $ref: "#/components/schemas/Region"
+        perspective:
+          $ref: "#/components/schemas/Perspective"
+
+    Region:
+      type: object
+      description: A geographic region grouping news sources
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Western Europe"
+        description:
+          type: string
+          example: "News sources from Western European countries"
+
+    Perspective:
+      type: object
+      description: A political or cultural viewpoint label assigned to a source
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Western"
+        description:
+          type: string
+          example: "Western-aligned news perspective"
+
+    Topic:
+      type: object
+      description: A topic category used to filter and organize articles
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Politics"
+        slug:
+          type: string
+          example: "politics"
+
+    Bookmark:
+      type: object
+      description: A saved article linked to a user
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        article:
+          $ref: "#/components/schemas/Article"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-17T14:00:00Z"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
