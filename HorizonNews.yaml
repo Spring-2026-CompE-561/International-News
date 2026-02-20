@@ -3,7 +3,7 @@ info:
   title: International News API
   version: '1.0'
   description: >
-    REST API for International News — a web applicatio that allows user to search for news articles based on region, perspective as well as compare these articles and see the sources.
+    REST API for International News — a web application that allows user to search for news articles based on region, perspective as well as compare these articles and see the sources.
 servers:
   - url: http://localhost:8000
     description: Local FastAPI development server
@@ -226,7 +226,7 @@ paths:
 
   /articles/compare:
     get:
-      summary: Compare coverage of a topic across perspectives and regions
+      summary: See how different regions cover the same topic.
       tags: [Articles]
       description: >
         Returns articles on the same topic grouped by perspective, enabling the
