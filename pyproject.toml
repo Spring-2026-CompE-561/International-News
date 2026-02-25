@@ -1,4 +1,9 @@
 [dependency-groups]
+runtime = [
+    "fastapi",
+    "uvicorn[standard]",
+]
+
 dev = [
     "ruff>=0.15.1",
 ]
