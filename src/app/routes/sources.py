@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 api_router = APIRouter(prefix="/sources", tags=["sources"])
 
+
 @api_router.get("")
 async def get_sources():
     return {"message": "Get sources"}

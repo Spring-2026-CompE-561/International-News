@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 api_router = APIRouter(prefix="/bookmarks", tags=["bookmarks"])
 
+
 @api_router.get("")
 async def get_bookmarks():
     return {"message": "Get bookmarks route"}
