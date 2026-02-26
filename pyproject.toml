@@ -2,6 +2,7 @@
 runtime = [
     "fastapi",
     "uvicorn[standard]",
+    "sqlalchemy",
 ]
 
 dev = [
