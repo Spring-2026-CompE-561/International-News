@@ -1,22 +1,25 @@
-from enum import StrEnum
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-class ModelName(StrEnum):
-    alexnet = "alexnet"
-    resnet = "resnet"
-    lenet = "lenet"
+from app.api.v1.routes import api_router
+from app.core.database import Base, engine
+from app.core.settings import settings
 
+# Create database tables if they don't exist
+Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    title=settings.app_name,
+    description= "An API for International news articles",
+    version=settings.app_version,
+)
 
+app.include_router(api_router)
 
-@app.get("/models/{model_name}")
-async def get_model(model_name: ModelName) -> dict[str, str]:
-    if model_name is ModelName.alexnet:
-        return {"model_name": model_name, "message": "Deep Learning FTW!"}
-
-    if model_name is ModelName.lenet:
-        return {"model_name": model_name, "message": "LeCNN all the images"}
-
-    return {"model_name": model_name, "message": "Have some residuals"}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
