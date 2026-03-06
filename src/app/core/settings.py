@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     secret_key: str = Field(default="your_secret_key")
     algorithm: str = Field(default="HS256")
-    # access_token_expire_minutes: int = Field(default=30)
+    access_token_expire_minutes: int = Field(default=30)
 
     database_url: str = Field(
         default="sqlite:///./Horizon_News.db",

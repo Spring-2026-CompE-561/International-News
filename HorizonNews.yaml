@@ -3,8 +3,8 @@ info:
   title: International News API
   version: '1.0'
   description: >
-    REST API for International News - a web application that allows user to search for news articles based on region,
-    as well as compare these articles and see the sources.
+    REST API for International News - a web application that allows users to search for news articles
+    based on region, country, and topic, and compare how different countries cover the same events.
 servers:
   - url: http://localhost:8000
     description: Local FastAPI development server
@@ -166,21 +166,29 @@ paths:
       summary: Search and retrieve news articles
       tags: [Articles]
       description: >
-        Returns articles filtered by topic, region, country, or keyword.
-        Supports pagination.
+        Returns articles filtered by topic, region, country, keyword,
+        or specific real-world event.
       parameters:
+
         - name: q
           in: query
           schema:
             type: string
           description: Keyword search
           example: climate summit
+
         - name: topic
           in: query
           schema:
             type: string
             enum: [world, politics, economy, conflict, tech]
           description: Filter by topic category
+
+        - name: topic_event_id
+          in: query
+          schema:
+            type: integer
+          description: Filter articles by a specific TopicEvent
 
         - name: region_id
           in: query
@@ -196,18 +204,19 @@ paths:
             maxLength: 2
           description: Filter by country code (derived from source)
           example: US
-          #added country_code filter for displaying country abreviation instead of id
-
+          
         - name: skip
           in: query
           schema:
             type: integer
             default: 0
+
         - name: limit
           in: query
           schema:
             type: integer
             default: 20
+            
       responses:
         "200":
           description: List of articles matching filters
