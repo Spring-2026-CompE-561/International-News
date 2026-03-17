@@ -8,4 +8,5 @@ runtime = [
 dev = [
     "fastapi>=0.133.1",
     "ruff>=0.15.1",
+    "sqlalchemy>=2.0.48",
 ]
