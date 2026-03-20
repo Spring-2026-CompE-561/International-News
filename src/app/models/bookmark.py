@@ -10,8 +10,12 @@ class Bookmark(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    article_id = Column(Integer, ForeignKey("articles.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    article_id = Column(
+        Integer, ForeignKey("articles.id", ondelete="CASCADE"), nullable=False
+    )
 
     topic_event_id = Column(Integer, ForeignKey("topic_events.id"), nullable=True)
 
@@ -19,6 +23,7 @@ class Bookmark(Base):
 
     user = relationship("User", back_populates="bookmarks")
     article = relationship("Article", back_populates="bookmarks")
+    topic_event = relationship("TopicEvent", back_populates="bookmarks")
 
     __table_args__ = (
         UniqueConstraint("user_id", "article_id", name="uq_user_article_bookmark"),
