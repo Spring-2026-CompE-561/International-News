@@ -19,8 +19,11 @@ class Article(Base):
 
     source_id = Column(Integer, ForeignKey("sources.id"), nullable=False)
     topic_id = Column(Integer, ForeignKey("topics.id"), nullable=True)
+    region_id = Column(Integer, ForeignKey("regions.id"), nullable=True)
+    topic_event_id = Column(Integer, ForeignKey("topic_events.id"), nullable=True)
 
     source = relationship("Source", back_populates="articles")
     topic = relationship("Topic", back_populates="articles")
-
-    cluster_links = relationship("ClusterArticle", back_populates="article")
+    region = relationship("Region", back_populates="articles")
+    topic_event = relationship("TopicEvent", back_populates="articles")
+    bookmarks = relationship("Bookmark", back_populates="article")
