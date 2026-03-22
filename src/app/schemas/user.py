@@ -10,12 +10,17 @@ class UserBase(BaseModel):
     """Base user schema."""
 
     email: EmailStr
+    username: str
 
 
 class UserCreate(UserBase):
     """Schema for creating a new user."""
 
     password: str
+
+
+class UserDb(UserBase):
+    hashed_password: str
 
 
 class User(UserBase):
