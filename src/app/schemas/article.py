@@ -11,6 +11,8 @@ class ArticleBase(BaseModel):
 
     source_id: int
     topic_id: int | None = None
+    region_id: int | None = None
+    topic_event_id: int | None = None
 
 
 class ArticleCreate(ArticleBase):

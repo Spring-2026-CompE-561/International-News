@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class TopicBase(BaseModel):
     name: str
+    slug: str
 
 
 class TopicCreate(TopicBase):
