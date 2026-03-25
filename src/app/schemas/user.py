@@ -28,10 +28,3 @@ class User(UserBase):
 
     id: int
     model_config = {"from_attributes": True}
-
-
-class Token(BaseModel):
-    """Schema for authentication token response."""
-
-    access_token: str
-    token_type: str
