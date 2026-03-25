@@ -3,6 +3,11 @@ runtime = [
     "fastapi",
     "uvicorn[standard]",
     "sqlalchemy",
+    "pydantic-settings",
+    "pyjwt",
+    "pwdlib",
+    "httpx",
+    "python-multipart",
 ]
 
 dev = [
