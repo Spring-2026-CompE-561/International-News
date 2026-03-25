@@ -1,9 +1,7 @@
 pre-commit
-fastapi
-uvicorn[standard]
+fastapi[all]
 sqlalchemy
 pydantic-settings
 pyjwt
-pwdlib
+pwdlib[argon2]
 httpx
-python-multipart
