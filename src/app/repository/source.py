@@ -14,6 +14,16 @@ class SourceRepository:
         return db.query(Source).all()
 
     @staticmethod
+    def get_filtered(
+        db: "Session",
+        region_id: int | None = None,
+    ) -> list[Source]:
+        query = db.query(Source)
+        if region_id is not None:
+            query = query.filter(Source.region_id == region_id)
+        return query.all()
+
+    @staticmethod
     def get_by_id(db: "Session", source_id: int) -> Source | None:
         return db.query(Source).filter(Source.id == source_id).first()
 

@@ -14,6 +14,44 @@ class ArticleRepository:
         return db.query(Article).all()
 
     @staticmethod
+    def get_filtered(
+        db: "Session",
+        q: str | None = None,
+        topic_id: int | None = None,
+        region_id: int | None = None,
+        skip: int = 0,
+        limit: int = 20,
+    ) -> list[Article]:
+        query = db.query(Article)
+        if q:
+            query = query.filter(
+                Article.title.ilike(f"%{q}%") | Article.summary.ilike(f"%{q}%")
+            )
+        if topic_id is not None:
+            query = query.filter(Article.topic_id == topic_id)
+        if region_id is not None:
+            query = query.filter(Article.region_id == region_id)
+        return query.offset(skip).limit(limit).all()
+
+    @staticmethod
+    def count_filtered(
+        db: "Session",
+        q: str | None = None,
+        topic_id: int | None = None,
+        region_id: int | None = None,
+    ) -> int:
+        query = db.query(Article)
+        if q:
+            query = query.filter(
+                Article.title.ilike(f"%{q}%") | Article.summary.ilike(f"%{q}%")
+            )
+        if topic_id is not None:
+            query = query.filter(Article.topic_id == topic_id)
+        if region_id is not None:
+            query = query.filter(Article.region_id == region_id)
+        return query.count()
+
+    @staticmethod
     def get_by_id(db: "Session", article_id: int) -> Article | None:
         return db.query(Article).filter(Article.id == article_id).first()
 
