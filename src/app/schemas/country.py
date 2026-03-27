@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CountryBase(BaseModel):
@@ -16,3 +16,11 @@ class CountryResponse(CountryBase):
 
     class Config:
         from_attributes = True
+
+# This schema is used for country/ endpoint
+class CountryRead(BaseModel):
+    code: str
+    name: str
+    language: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
