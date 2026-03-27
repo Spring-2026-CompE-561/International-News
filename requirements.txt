@@ -5,3 +5,5 @@ pydantic-settings
 pyjwt
 pwdlib[argon2]
 httpx
+pytest
+pytest-asyncio
