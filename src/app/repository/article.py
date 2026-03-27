@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
 
 from app.models.article import Article
+from app.models.country import Country
+from app.models.source import Source
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -19,6 +21,8 @@ class ArticleRepository:
         q: str | None = None,
         topic_id: int | None = None,
         region_id: int | None = None,
+        country_code: str | None = None,
+        topic_event_id: int | None = None,
         skip: int = 0,
         limit: int = 20,
     ) -> list[Article]:
@@ -27,10 +31,16 @@ class ArticleRepository:
             query = query.filter(
                 Article.title.ilike(f"%{q}%") | Article.summary.ilike(f"%{q}%")
             )
+        if country_code is not None:
+            query = query.join(Article.source).join(Source.country).filter(Country.code == country_code)
         if topic_id is not None:
             query = query.filter(Article.topic_id == topic_id)
+
         if region_id is not None:
             query = query.filter(Article.region_id == region_id)
+
+        if topic_event_id is not None:
+            query = query.filter(Article.topic_event_id == topic_event_id)
         return query.offset(skip).limit(limit).all()
 
     @staticmethod
@@ -39,16 +49,25 @@ class ArticleRepository:
         q: str | None = None,
         topic_id: int | None = None,
         region_id: int | None = None,
+        country_code: str | None = None,
+        topic_event_id: int | None = None,
     ) -> int:
         query = db.query(Article)
         if q:
             query = query.filter(
                 Article.title.ilike(f"%{q}%") | Article.summary.ilike(f"%{q}%")
             )
+        if country_code is not None:
+            query = query.join(Article.source).join(Source.country).filter(Country.code == country_code)
+        
         if topic_id is not None:
             query = query.filter(Article.topic_id == topic_id)
+
         if region_id is not None:
             query = query.filter(Article.region_id == region_id)
+
+        if topic_event_id is not None:
+            query = query.filter(Article.topic_event_id == topic_event_id)
         return query.count()
 
     @staticmethod
