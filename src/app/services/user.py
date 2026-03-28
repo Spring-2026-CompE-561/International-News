@@ -52,6 +52,18 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
+        existing_email = self.repository.get_by_mail(db, user_data.email)
+        if existing_email and existing_email.id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Email already in use",
+            )
+        existing_username = self.repository.get_by_username(db, user_data.username)
+        if existing_username and existing_username.id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Username already in use",
+            )
         user.email = user_data.email
         user.username = user_data.username
         user.hashed_password = get_password_hash(user_data.password)
