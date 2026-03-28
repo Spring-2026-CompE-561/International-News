@@ -8,11 +8,6 @@ from app.repository.topic_event import TopicEventRepository
 api_router = APIRouter(prefix="/topics", tags=["topics"])
 
 
-@api_router.get("")
-async def get_topics():
-    return {"message": "Get topics route"}
-
-
 @api_router.get("/trending")
 async def get_trending_topics():
     return {"message": "Get treding topics"}

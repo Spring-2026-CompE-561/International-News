@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from app.models.source import Source
+from app.models.country import Country
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -17,10 +18,13 @@ class SourceRepository:
     def get_filtered(
         db: "Session",
         region_id: int | None = None,
+        country_code: str | None = None,
     ) -> list[Source]:
         query = db.query(Source)
         if region_id is not None:
             query = query.filter(Source.region_id == region_id)
+        if country_code is not None:
+            query = query.join(Source.country).filter(Country.code == country_code)
         return query.all()
 
     @staticmethod
