@@ -1,26 +1,30 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.repository.topic_event import TopicEventRepository
+from app.schemas.topic_event import TopicEventResponse
 
 
 api_router = APIRouter(prefix="/topics", tags=["topics"])
 
 
-@api_router.get("")
-async def get_topics():
-    return {"message": "Get topics route"}
+@api_router.get("/trending", response_model=list[TopicEventResponse])
+async def get_trending_topics(
+    limit: int = Query(default=20, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    return TopicEventRepository.get_trending(db, limit=limit)
 
 
-@api_router.get("/trending")
-async def get_trending_topics():
-    return {"message": "Get treding topics"}
-
-
-@api_router.get("/{id}")
-async def get_topics_by_id(id: int):
-    return {"message": f"Get topics by {id}"}
+@api_router.get("/{id}", response_model=TopicEventResponse)
+async def get_topics_by_id(id: int, db: Session = Depends(get_db)):
+    topic_event = TopicEventRepository.get_by_id(db, id)
+    if not topic_event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Topic event not found"
+        )
+    return topic_event
 
 
 @api_router.get("/{id}/coverage")

@@ -13,11 +13,7 @@ if TYPE_CHECKING:
 class TopicEventRepository:
     @staticmethod
     def get_by_id(db: "Session", topic_event_id: int) -> TopicEvent | None:
-        return (
-            db.query(TopicEvent)
-            .filter(TopicEvent.id == topic_event_id)
-            .first()
-        )
+        return db.query(TopicEvent).filter(TopicEvent.id == topic_event_id).first()
 
     @staticmethod
     def get_coverage(
@@ -87,3 +83,30 @@ class TopicEventRepository:
             "topic_event_id": topic_event_id,
             "coverage": list(coverage_by_country.values()),
         }
+
+    @staticmethod
+    def get_trending(db: "Session", limit: int = 20) -> list[TopicEvent]:
+        return (
+            db.query(TopicEvent)
+            .order_by(TopicEvent.updated_at.desc())
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
+    def get_trending_by_country(
+        db: "Session", country_code: str, limit: int = 20
+    ) -> list[TopicEvent]:
+        from app.models.country import Country
+
+        return (
+            db.query(TopicEvent)
+            .join(Article, Article.topic_event_id == TopicEvent.id)
+            .join(Source, Article.source_id == Source.id)
+            .join(Country, Source.country_id == Country.id)
+            .filter(Country.code == country_code)
+            .order_by(TopicEvent.updated_at.desc())
+            .distinct()
+            .limit(limit)
+            .all()
+        )
