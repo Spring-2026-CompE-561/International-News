@@ -33,7 +33,8 @@ async def update_user(
     current_user: Annotated[UserSchema, Depends(get_current_user)],
     user_data: UserCreate,
 ):
-
+    if current_user.id != id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this user.")
     return user_service.update(db, id, user_data)
 
 
@@ -43,4 +44,6 @@ async def delete_user(
     id: int,
     current_user: Annotated[UserSchema, Depends(get_current_user)],
 ):
+    if current_user.id != id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this user.")
     user_service.delete(db, id)

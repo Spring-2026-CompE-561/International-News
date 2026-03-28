@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 from app.core.database import get_db
 from app.services.article import get_article_by_id, get_articles
-from app.schemas.article import ArticleResponse, ArticleSearchResponse
+from app.schemas.article import ArticleRead, ArticleSearchResponse
 
 api_router = APIRouter(prefix="/articles", tags=["articles"])
 
@@ -30,8 +30,8 @@ def search_articles(
     )
 
 
-@api_router.get("/{id}", response_model=ArticleResponse)
-async def get_article(id: int, db: Session = Depends(get_db)) -> ArticleResponse:
+@api_router.get("/{id}", response_model=ArticleRead)
+async def get_article(id: int, db: Session = Depends(get_db)) -> ArticleRead:
     return get_article_by_id(db, id)
 
 
