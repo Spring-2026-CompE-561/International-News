@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 
 from app.repository.article import ArticleRepository
 from app.schemas.article import ArticleSearchResponse
-from app.repository.country import CountryRepository
 from fastapi import HTTPException, status
 
 
