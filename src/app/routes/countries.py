@@ -1,12 +1,14 @@
-from typing import Optional
 from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 from typing import Annotated
 from app.services.country import get_countries
-from app.schemas.country import CountryResponse, CountryRead
+from app.schemas.country import CountryRead
 from app.core.database import get_db
+from app.repository.topic_event import TopicEventRepository
+from app.schemas.topic_event import TopicEventResponse
 
 api_router = APIRouter(prefix="/countries", tags=["countries"])
+
 
 @api_router.get("", response_model=list[CountryRead])
 def list_countries(db: Annotated[Session, Depends(get_db)]) -> list[CountryRead]:
@@ -16,14 +18,12 @@ def list_countries(db: Annotated[Session, Depends(get_db)]) -> list[CountryRead]
     return get_countries(db)
 
 
-@api_router.get("/{code}/trending/topics")
+@api_router.get("/{code}/trending/topics", response_model=list[TopicEventResponse])
 async def get_country_trending_topics(
     code: str,
-    limit: int = Query(default=20),
-    topic: Optional[str] = Query(default=None), 
+    limit: int = Query(default=20, ge=1, le=100),
+    db: Annotated[Session, Depends(get_db)] = None,
 ):
-    return {
-        "message": f"Get trending topics for country {code}",
-        "limit": limit,
-        "topic_filter": topic,
-    }
+    return TopicEventRepository.get_trending_by_country(
+        db, country_code=code, limit=limit
+    )
