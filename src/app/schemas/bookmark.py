@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class BookmarkBase(BaseModel):
-    article_id: int
+    article_id: int | None = None
     topic_event_id: int | None = None
 
 
