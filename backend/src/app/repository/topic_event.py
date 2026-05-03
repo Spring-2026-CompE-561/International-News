@@ -16,6 +16,18 @@ class TopicEventRepository:
         return db.query(TopicEvent).filter(TopicEvent.id == topic_event_id).first()
 
     @staticmethod
+    def get_trending(db: "Session", limit: int = 10, category: str | None = None) -> list[TopicEvent]:
+        query = db.query(TopicEvent)
+        if category:
+            query = query.filter(TopicEvent.category == category)
+        return (
+            query
+            .order_by(TopicEvent.trending_score.desc())
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
     def get_coverage(
         db: "Session",
         topic_event_id: int,
@@ -83,15 +95,6 @@ class TopicEventRepository:
             "topic_event_id": topic_event_id,
             "coverage": list(coverage_by_country.values()),
         }
-
-    @staticmethod
-    def get_trending(db: "Session", limit: int = 20) -> list[TopicEvent]:
-        return (
-            db.query(TopicEvent)
-            .order_by(TopicEvent.updated_at.desc())
-            .limit(limit)
-            .all()
-        )
 
     @staticmethod
     def get_trending_by_country(

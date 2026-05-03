@@ -6,11 +6,13 @@ import { cn } from "@/lib/utils";
 
 const topics = [
   { label: "All News", slug: null },
-  { label: "World", slug: "world" },
-  { label: "Politics", slug: "politics" },
-  { label: "Economy", slug: "economy" },
-  { label: "Conflict", slug: "conflict" },
-  { label: "Tech", slug: "tech" },
+  { label: "World & Conflict", slug: "world" },
+  { label: "Business & Economy", slug: "business" },
+  { label: "Technology", slug: "technology" },
+  { label: "Science", slug: "science" },
+  { label: "Health", slug: "health" },
+  { label: "Sports", slug: "sports" },
+  { label: "Entertainment", slug: "entertainment" },
 ];
 
 export function TopicBar() {

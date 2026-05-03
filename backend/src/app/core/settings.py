@@ -12,8 +12,28 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = Field(default=30)
 
     database_url: str = Field(
-        default="sqlite:///./Horizon_News.db",
+        default="postgresql://localhost/horizon_news",
         description="Database connection URL",
+    )
+
+    news_api_key: str = Field(
+        default="",
+        description="NewsAPI.org API key",
+    )
+
+    groq_api_key: str = Field(
+        default="",
+        description="Groq API key for headline polish",
+    )
+
+    gemini_api_key: str = Field(
+        default="",
+        description="Google Gemini API key (fallback AI provider)",
+    )
+
+    openrouter_api_key: str = Field(
+        default="",
+        description="OpenRouter API key (free fallback AI provider)",
     )
 
     class Config:

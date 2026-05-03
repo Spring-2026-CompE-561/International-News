@@ -47,15 +47,17 @@ function MobileNavbar() {
 
 function DesktopNavbar() {
 	return (
-		<div className="hidden border-separate border-b bg-background md:block">
-			<nav className="container relative flex h-20 min-h-15 items-center px-8">
-				<LogoMobile />
+		<div className="hidden border-b border-black/10 dark:border-white/10 bg-white dark:bg-black md:block transition-colors">
+			<nav className="max-w-7xl mx-auto relative flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
+				<div className="flex items-center gap-3">
+					<LogoMobile />
+				</div>
 				<Link href="/" className="absolute left-1/2 -translate-x-1/2">
 					<h1 className="text-3xl font-serif font-bold text-black dark:text-white whitespace-nowrap hover:text-[#F59E0B] transition-colors">
-						Horizon News
+						On The Horizon
 					</h1>
 				</Link>
-				<div className="ml-auto flex items-center gap-2">
+				<div className="flex items-center gap-3">
 					<Link
 						href="/signin"
 						aria-label="Sign in"

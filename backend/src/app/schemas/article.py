@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, HttpUrl
+from pydantic import BaseModel, ConfigDict, HttpUrl, field_validator
 
 from app.schemas.country import CountryResponse
 from app.schemas.source import SourceResponse
@@ -13,6 +13,13 @@ class ArticleBase(BaseModel):
     published_at: datetime | None = None
     summary: str | None = None
     image_url: HttpUrl | None = None
+
+    @field_validator("image_url", mode="before")
+    @classmethod
+    def empty_str_to_none(cls, v):
+        if v == "" or v is None:
+            return None
+        return v
 
     source_id: int
     topic_id: int | None = None
@@ -35,6 +42,17 @@ class ArticleRead(BaseModel):
     title: str
     url: HttpUrl
     published_at: datetime | None = None
+    summary: str | None = None
+    body: str | None = None
+    image_url: HttpUrl | None = None
+
+    @field_validator("image_url", mode="before")
+    @classmethod
+    def empty_str_to_none(cls, v):
+        if v == "" or v is None:
+            return None
+        return v
+    trending_score: int | None = 0
     source: SourceResponse | None = None
     topic: TopicResponse | None = None
     region: RegionResponse | None = None

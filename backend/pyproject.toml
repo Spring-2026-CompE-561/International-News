@@ -5,7 +5,12 @@ description = "An Internation news website"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "anthropic>=0.97.0",
     "fastapi[all]>=0.128.8",
+    "feedparser>=6.0.12",
+    "lxml-html-clean>=0.4.4",
+    "newspaper3k>=0.2.8",
+    "psycopg2-binary>=2.9.12",
     "pwdlib[argon2]>=0.3.0",
     "pyjwt>=2.11.0",
     "python-multipart>=0.0.22",
