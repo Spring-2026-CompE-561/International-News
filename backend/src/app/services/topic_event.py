@@ -139,96 +139,65 @@ SIDES_SECTION_NAMES = {
 
 # ── Prompt builder ───────────────────────────────────────────
 
-def build_briefing_prompt(topic_event: TopicEvent, source_packets: list) -> str:
+def build_briefing_prompt(topic_event: TopicEvent, source_packets: list, verified_facts: str = "") -> str:
     category = topic_event.category or "World & Conflict"
     tone = CATEGORY_TONES.get(category, CATEGORY_TONES["World & Conflict"])
-    packets_json = json.dumps(source_packets, indent=2)
 
     countries = list({p["country"] for p in source_packets if p["country"] != "Unknown"})
-    sources = list({p["original_publisher"] for p in source_packets if not p.get("is_aggregator")})
-    if not sources:
-        sources = list({p["source"] for p in source_packets})
-    n_sources = len(sources)
-    n_countries = len(countries)
+    source_lines = []
+    for p in source_packets:
+        src = p.get("original_publisher", p["source"])
+        line = f"• {p['headline']} [{src}, {p['country']}]"
+        if p.get("snippet") and p["snippet"] != p["headline"]:
+            line += f"\n  → {p['snippet']}"
+        source_lines.append(line)
+    sources_text = "\n".join(source_lines)
 
-    sides_title = SIDES_SECTION_NAMES.get(category, "Who's Affected")
+    facts_block = ""
+    if verified_facts:
+        facts_block = f"""
+VERIFIED FACTS (use ONLY these — do not add any facts not on this list):
+{verified_facts}
+"""
 
-    return f"""You are Horizon News's story architect. Extract facts from the sources, then write each section.
+    return f"""You are a senior editor at a premium news magazine. Write a story briefing that reads like The Atlantic meets Reuters — authoritative but engaging, sharp but never dry.
 
-RULES:
-- ONLY use facts from the source packets. Never invent sanctions, coalitions, operations, positions, quotes, or dates.
-- Any sentence with a number, ranking, "record," "world's largest," or prediction MUST be directly in a source packet. If not, remove or soften it.
-- Country in source ≠ that country's government is involved. It means that country's MEDIA frames the story a certain way.
-- Do NOT use Google/Yahoo/MSN as source names.
-- Do NOT write "raised concerns" or "significant implications" — name the specific concern.
+{topic_event.title} | {category} | {len(countries)} countries ({', '.join(countries)})
 
-SECTION JOBS (each must be unique — NO repeating the same facts):
-- situation_brief: only key facts, no analysis
-- what_changed: ONLY the single newest development (not a recap)
-- why_it_matters: ONLY consequences/stakes (not what happened)
-- angles: what each country's MEDIA emphasizes differently
-- "{sides_title}": who benefits, who is hurt, what each actor faces — only source-backed
-- burning_questions: 5-7 questions readers actually want answered, with source-backed answers or "unclear from current reporting"
+{sources_text}
+{facts_block}
+STRICT RULE: Every claim in your writing MUST come from the verified facts list above. Do NOT invent quotes, numbers, names, dates, or events not on that list. If the facts are thin, write a shorter but accurate piece.
 
-BEFORE RETURNING: Compare what_changed and why_it_matters. If they say the same thing, rewrite one.
+Writing rules:
+- Short punchy paragraphs. Vary sentence length.
+- Use transitions — connect ideas, don't list facts.
+- Name specific actors, places, numbers from the facts. No vague "officials say."
+- Make the reader feel the stakes.
+- Style: {tone}
 
-STYLE: {tone}
-STORY: {topic_event.title} | {category} | {n_sources} sources | {n_countries} countries ({', '.join(countries)})
+Use this EXACT format:
 
-SOURCE PACKETS:
-{packets_json}
-
-Return ONLY valid JSON:
-
-{{
-  "dek": "One sentence, the stakes.",
-  "hook": "Two sharp factual sentences. 30-50 words.",
-  "situation_brief": ["4-6 concrete fact bullets"],
-  "what_changed": {{
-    "heading": "What changed",
-    "body": "ONLY newest development. 100-180 words. No recap."
-  }},
-  "why_it_matters": {{
-    "heading": "Why this matters",
-    "body": "ONLY consequences. 200-350 words. No recap of what happened."
-  }},
-  "angles": [
-    {{
-      "label": "Country or topic",
-      "type": "country | market | consumer | legal | military | food_security | energy",
-      "summary": "2-4 sentences. What this media/perspective adds. Source-backed.",
-      "source_names": ["Sources"]
-    }}
-  ],
-  "what_each_side_is_saying": [
-    {{
-      "side": "Actor/group/sector",
-      "position": "Source-backed impact or position. If unsupported: 'Current sources do not clearly show [actor]'s position.'"
-    }}
-  ],
-  "burning_questions": [
-    {{"question": "Specific reader question", "answer": "Source-backed answer or 'This remains unclear from current reporting.'"}},
-    {{"question": "Second question", "answer": "..."}},
-    {{"question": "Third question", "answer": "..."}},
-    {{"question": "Fourth question", "answer": "..."}},
-    {{"question": "Fifth question", "answer": "..."}}
-  ],
-  "timeline": [
-    {{"label": "Latest/Earlier/date if in sources", "event": "Source-supported only."}}
-  ],
-  "uncertainty": ["What is unclear or missing."],
-  "rabbit_holes": [
-    {{"title": "Related angle", "description": "Why it connects."}}
-  ],
-  "source_intelligence": [
-    {{
-      "source": "Publisher (not Google)",
-      "country": "Country",
-      "publisher_type": "reporting | analysis | opinion | aggregator",
-      "contribution": "What THIS source specifically adds — not just the headline."
-    }}
-  ]
-}}"""
+===DEK===
+One sentence that makes someone stop scrolling.
+===HOOK===
+Two sentences. First: the hard news. Second: why it matters.
+===BULLETS===
+• Key fact with specifics
+• What changed
+• Who is involved
+• Why it matters now
+===STORY===
+Write 5-8 paragraphs. This is the main read — make it flow like a magazine article, not a report. Each paragraph should pull the reader to the next. Cover: what happened, why, who's affected, what different countries see, and what comes next.
+===CHANGED===
+The single newest development. 2-3 crisp sentences.
+===MATTERS===
+The consequences. Who wins, who loses, what's at risk. 2-3 sentences.
+===ANGLES===
+{chr(10).join(f'{c}: What {c} media coverage reveals about their perspective [source name]' for c in countries)}
+===TIMELINE===
+Latest — event
+===SOURCES===
+Source name (Country): their unique angle or contribution"""
 
 
 # ── Generation ───────────────────────────────────────────────
@@ -293,68 +262,140 @@ def _call_openrouter(prompt, max_tokens=4000, temperature=0.4):
 
 
 def groq_call(prompt, max_tokens=4000, temperature=0.4):
-    """Try Groq, then OpenRouter. One shot each — no long waits."""
-    return _call_groq(prompt, max_tokens, temperature) or _call_openrouter(prompt, max_tokens, temperature)
+    """Try Groq and OpenRouter in parallel. First response wins."""
+    import concurrent.futures
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        groq_future = executor.submit(_call_groq, prompt, max_tokens, temperature)
+        or_future = executor.submit(_call_openrouter, prompt, max_tokens, temperature)
+
+        # Return whichever finishes first with a result
+        for future in concurrent.futures.as_completed([groq_future, or_future], timeout=35):
+            try:
+                result = future.result()
+                if result:
+                    return result
+            except Exception:
+                continue
+
+    return None
 
 
-def parse_json_response(content):
-    if not content:
-        return None
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1] if "\n" in content else content[3:]
-    if content.endswith("```"):
-        content = content[:-3]
-    content = content.strip()
-    return json.loads(content)
+def _extract_section(content, key):
+    """Extract text between ===KEY=== markers."""
+    pattern = f'==={key}===\\s*(.+?)(?=\\s*===[A-Z]|$)'
+    match = re.search(pattern, content, re.DOTALL)
+    if match:
+        text = match.group(1).strip()
+        return re.sub(r'===.*?===\s*', '', text).strip()
+    return ""
 
 
-def store_briefing(topic_event, briefing):
-    topic_event.hook = briefing.get("hook", topic_event.hook or "")
-    topic_event.dek = briefing.get("dek", "")
+def _parse_angles(text):
+    """Parse angle lines like 'United States: perspective text [BBC]'"""
+    angles = []
+    for line in text.split("\n"):
+        line = line.strip().strip("*").strip()
+        if not line or line.startswith("==="):
+            continue
+        # Parse "Label: summary [source]"
+        match = re.match(r'^(.+?):\s*(.+?)(?:\[(.+?)\])?\s*$', line)
+        if match:
+            label = match.group(1).strip().strip("*").strip()
+            summary = match.group(2).strip().strip("*").strip()
+            sources = [s.strip() for s in match.group(3).split(",")] if match.group(3) else []
+            angles.append({"label": label, "type": "country", "summary": summary, "source_names": sources})
+        elif ":" in line:
+            parts = line.split(":", 1)
+            angles.append({"label": parts[0].strip().strip("*").strip(), "type": "country", "summary": parts[1].strip().strip("*").strip(), "source_names": []})
+    return angles
 
-    if briefing.get("situation_brief"):
-        topic_event.quick_brief = json.dumps(briefing["situation_brief"])
 
-    if briefing.get("full_briefing"):
-        topic_event.full_briefing = json.dumps(briefing["full_briefing"])
-        topic_event.what_happened = briefing["full_briefing"].get("body", "")
+def _parse_bullets(text):
+    """Parse bullet lines."""
+    bullets = []
+    for line in text.split("\n"):
+        line = line.strip().lstrip("•-* ").strip()
+        if line:
+            bullets.append(line)
+    return bullets
 
-    if briefing.get("what_changed"):
-        topic_event.what_changed = json.dumps(briefing["what_changed"])
 
-    if briefing.get("why_it_matters"):
-        topic_event.big_picture = json.dumps(briefing["why_it_matters"])
-        topic_event.why_it_matters = briefing["why_it_matters"].get("body", "")
+def _parse_timeline(text):
+    """Parse timeline lines like 'Latest — event'"""
+    items = []
+    for line in text.split("\n"):
+        line = line.strip().lstrip("•-* ").strip()
+        if not line:
+            continue
+        if " — " in line:
+            parts = line.split(" — ", 1)
+            items.append({"label": parts[0].strip(), "event": parts[1].strip()})
+        elif line:
+            items.append({"label": "Update", "event": line})
+    return items
 
-    if briefing.get("angles"):
-        topic_event.angles = json.dumps(briefing["angles"])
-        perspectives = []
-        for ang in briefing["angles"]:
-            label = ang.get("label", "")
-            summary = ang.get("summary", ang.get("angle", ""))
-            src_names = ", ".join(ang.get("source_names", []))
-            perspectives.append(f"{label}: {summary}" + (f" [{src_names}]" if src_names else ""))
-        topic_event.global_perspective = "\n\n".join(perspectives)
 
-    if briefing.get("what_each_side_is_saying"):
-        topic_event.sides_saying = json.dumps(briefing["what_each_side_is_saying"])
+def _parse_sources(text):
+    """Parse source lines like 'BBC (UK): unique contribution'"""
+    notes = []
+    for line in text.split("\n"):
+        line = line.strip().lstrip("•-* ").strip()
+        if not line:
+            continue
+        match = re.match(r'^(.+?)\s*\((.+?)\)\s*:\s*(.+)$', line)
+        if match:
+            notes.append({"source": match.group(1).strip(), "country": match.group(2).strip(),
+                          "publisher_type": "reporting", "contribution": match.group(3).strip()})
+        elif ":" in line:
+            parts = line.split(":", 1)
+            notes.append({"source": parts[0].strip(), "country": "", "publisher_type": "reporting",
+                          "contribution": parts[1].strip()})
+    return notes
 
-    if briefing.get("burning_questions"):
-        topic_event.burning_questions = json.dumps(briefing["burning_questions"])
 
-    if briefing.get("timeline"):
-        topic_event.timeline_json = json.dumps(briefing["timeline"])
-        lines = [f"{t.get('label', t.get('date', 'Update'))} — {t['event']}" for t in briefing["timeline"]]
-        topic_event.timeline = "\n".join(lines)
+def store_briefing_from_text(topic_event, content):
+    """Parse ===SECTION=== text format and store into model fields."""
+    dek = _extract_section(content, "DEK")
+    hook = _extract_section(content, "HOOK")
+    bullets_text = _extract_section(content, "BULLETS")
+    story = _extract_section(content, "STORY")
+    changed = _extract_section(content, "CHANGED")
+    matters = _extract_section(content, "MATTERS")
+    angles_text = _extract_section(content, "ANGLES")
+    timeline_text = _extract_section(content, "TIMELINE")
+    sources_text = _extract_section(content, "SOURCES")
 
-    if briefing.get("rabbit_holes"):
-        topic_event.rabbit_holes = json.dumps(briefing["rabbit_holes"])
-
-    if briefing.get("uncertainty"):
-        topic_event.uncertainty = json.dumps(briefing["uncertainty"])
-
-    if briefing.get("source_intelligence"):
-        topic_event.source_notes = json.dumps(briefing["source_intelligence"])
+    if dek:
+        topic_event.dek = dek
+    if hook:
+        topic_event.hook = hook
+    if bullets_text:
+        topic_event.quick_brief = json.dumps(_parse_bullets(bullets_text))
+    if story:
+        topic_event.full_briefing = json.dumps({"heading": "The Story", "body": story})
+        topic_event.what_happened = story
+    if changed:
+        topic_event.what_changed = json.dumps({"heading": "What changed", "body": changed})
+    if matters:
+        topic_event.big_picture = json.dumps({"heading": "Why this matters", "body": matters})
+        topic_event.why_it_matters = matters
+    if angles_text:
+        angles = _parse_angles(angles_text)
+        # Only use AI angles if they have real country labels, not garbage like "Name"
+        valid_angles = [a for a in angles if a.get("label") and a["label"] not in ("Name", "name", "", "Country")]
+        if valid_angles and len(valid_angles) >= 2:
+            topic_event.angles = json.dumps(valid_angles)
+            topic_event.global_perspective = angles_text
+    if timeline_text:
+        timeline = _parse_timeline(timeline_text)
+        if timeline:
+            topic_event.timeline_json = json.dumps(timeline)
+            topic_event.timeline = timeline_text
+    if sources_text:
+        notes = _parse_sources(sources_text)
+        if notes:
+            topic_event.source_notes = json.dumps(notes)
 
 
 def _build_narrative_prompt(topic_event, source_packets, n_sources):
@@ -415,6 +456,36 @@ STRICT RULES:
 Write the story now. Plain text paragraphs separated by blank lines. No headings, no bullets, no JSON."""
 
 
+def _is_relevant_article(article, topic_event):
+    """Check if an article is actually about the story topic (not a misclustered article)."""
+    skip_words = {"trump", "says", "news", "report", "could", "would", "after", "about", "their", "president", "breaking"}
+    story_words = set(re.findall(r'\b[a-z]{4,}\b', topic_event.title.lower())) - skip_words
+    article_words = set(re.findall(r'\b[a-z]{4,}\b', article.title.lower())) - skip_words
+    if not story_words or not article_words:
+        return True
+    overlap = len(story_words & article_words)
+    return overlap >= 2
+
+
+def _try_scrape_snippet(url):
+    """Try to get a short snippet from the article URL for richer context."""
+    try:
+        resp = requests.get(url, timeout=5, headers={"User-Agent": "Mozilla/5.0"})
+        if resp.status_code != 200:
+            return ""
+        # Extract meta description
+        match = re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']', resp.text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()[:200]
+        # Extract og:description
+        match = re.search(r'<meta[^>]+property=["\']og:description["\'][^>]+content=["\'](.*?)["\']', resp.text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()[:200]
+    except Exception:
+        pass
+    return ""
+
+
 def generate_story_briefing(topic_event: TopicEvent, db: Session) -> None:
     all_articles = (
         db.query(Article)
@@ -425,11 +496,16 @@ def generate_story_briefing(topic_event: TopicEvent, db: Session) -> None:
     if not all_articles:
         return
 
+    # Filter out irrelevant articles (misclustered)
+    relevant = [a for a in all_articles if _is_relevant_article(a, topic_event)]
+    if not relevant:
+        relevant = all_articles
+
     # Diverse sample: one article per country first, then fill with top-scored
     seen_countries = set()
     priority = []
     rest = []
-    for a in all_articles:
+    for a in relevant:
         try:
             country = a.source.country.name if a.source and a.source.country else "Unknown"
         except Exception:
@@ -439,7 +515,15 @@ def generate_story_briefing(topic_event: TopicEvent, db: Session) -> None:
             priority.append(a)
         else:
             rest.append(a)
-    articles = (priority + rest)[:8]
+    articles = (priority + rest)[:6]
+
+    # Try to scrape snippets for top 3 articles that lack summaries
+    for a in articles[:3]:
+        if not a.summary or a.summary == a.title:
+            snippet = _try_scrape_snippet(a.url)
+            if snippet:
+                a.summary = snippet
+                db.commit()
 
     # Update counts from actual data
     actual_sources = set()
@@ -460,28 +544,42 @@ def generate_story_briefing(topic_event: TopicEvent, db: Session) -> None:
     sources = list({p["original_publisher"] for p in source_packets if not p.get("is_aggregator")})
     n_sources = len(sources) or len(source_packets)
 
-    # Single call — Groq free tier is 6K tokens/min, so we can't do two calls
-    prompt = build_briefing_prompt(topic_event, source_packets)
+    # CALL 1: Fast fact extraction (cheap, ~200 output tokens)
+    source_lines_short = "\n".join(
+        f"• {p['headline']}" + (f" — {p['snippet'][:80]}" if p.get("snippet") and p["snippet"] != p["headline"] else "")
+        for p in source_packets
+    )
+    fact_prompt = f"""Extract only the concrete facts from these headlines. List each fact once. No opinions, no analysis. Just facts.
+
+{source_lines_short}
+
+List facts as bullet points:"""
+
+    facts_text = groq_call(fact_prompt, max_tokens=400)
+    verified_facts = ""
+    if facts_text:
+        verified_facts = facts_text.strip()
+        print(f"    Extracted {len(verified_facts.split(chr(10)))} facts")
+
+    # Wait for token bucket
+    import time
+    time.sleep(2)
+
+    # CALL 2: Write briefing using ONLY the verified facts
+    prompt = build_briefing_prompt(topic_event, source_packets, verified_facts)
 
     try:
         content = groq_call(prompt, max_tokens=1800)
-        briefing = parse_json_response(content)
-        if briefing:
-            store_briefing(topic_event, briefing)
+        if content and "===" in content:
+            store_briefing_from_text(topic_event, content)
             db.commit()
             db.refresh(topic_event)
             return
-    except (json.JSONDecodeError, KeyError, TypeError) as e:
-        print(f"    Briefing JSON failed ({type(e).__name__}: {e}), using legacy")
     except Exception as e:
         print(f"    Briefing error: {type(e).__name__}: {e}")
 
-    # Legacy fallback
-    source_text = "\n".join(
-        f"- {p['headline']} (Source: {p['original_publisher']}, {p['country']})"
-        for p in source_packets
-    )
-    _generate_legacy_briefing(topic_event, db, source_text)
+    # Fallback
+    _populate_fallback_content(topic_event, db)
 
 
 def _generate_legacy_briefing(topic_event: TopicEvent, db: Session, source_text: str) -> None:
@@ -575,11 +673,26 @@ def get_topic_event_by_id(db: Session, topic_event_id: int) -> TopicEvent | None
     if not topic_event:
         return None
 
-    if not topic_event.full_briefing and not topic_event.what_changed and not topic_event.what_happened:
-        generate_story_briefing(topic_event, db)
+    needs_briefing = not topic_event.full_briefing and not topic_event.what_changed and not topic_event.what_happened
 
-        # If AI generation failed entirely, populate basic fallback content
-        if not topic_event.full_briefing and not topic_event.what_happened and not topic_event.hook:
+    if needs_briefing:
+        # Populate fallback content immediately so the page isn't empty
+        if not topic_event.hook:
             _populate_fallback_content(topic_event, db)
+
+        # Try AI generation in a background thread so the response isn't blocked
+        import threading
+        def _bg_generate(event_id):
+            from app.core.database import SessionLocal
+            bg_db = SessionLocal()
+            try:
+                te = TopicEventRepository.get_by_id(bg_db, event_id)
+                if te and not te.full_briefing and not te.what_changed:
+                    generate_story_briefing(te, bg_db)
+            finally:
+                bg_db.close()
+
+        thread = threading.Thread(target=_bg_generate, args=(topic_event_id,), daemon=True)
+        thread.start()
 
     return topic_event

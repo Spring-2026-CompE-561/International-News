@@ -90,7 +90,7 @@ export function TrendingTopics({ topics }: TrendingTopicsProps) {
                       Horizon News
                     </span>
                     <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-white/60 drop-shadow-lg block mt-0.5">
-                      Briefing
+                      Story
                     </span>
                   </div>
                 )}

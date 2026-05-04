@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import {
   Globe,
   Newspaper,
-  Lightbulb,
-  AlertTriangle,
   ExternalLink,
 } from "lucide-react";
 
@@ -93,19 +91,6 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-function getSidesTitle(category: string): string {
-  const map: Record<string, string> = {
-    "World & Conflict": "What Each Side Is Saying",
-    "Business & Economy": "Who's Affected",
-    "Technology": "Who's Affected",
-    "Science": "What Researchers Are Watching",
-    "Health": "What Patients & Public Should Know",
-    "Sports": "What It Means for the Season",
-    "Entertainment": "What It Means for the Industry",
-  };
-  return map[category] || "Who's Affected";
-}
-
 function hasBriefingContent(story: Story): boolean {
   return !!(story.full_briefing || story.burning_questions || story.what_changed);
 }
@@ -139,7 +124,7 @@ function LoadingPulse() {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          Generating briefing from sources...
+          Generating story from sources...
         </div>
       </div>
     </div>
@@ -223,7 +208,7 @@ export function StoryContent({
           {story.full_briefing && (
             <section id="story" className="mb-12 scroll-mt-16">
               <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-1">
-                Full Briefing
+                Full Story
               </h2>
               <div className="w-12 h-0.5 bg-[#F59E0B] mb-6" />
               {story.full_briefing.body.split("\n\n").map((p, i) => (
@@ -303,40 +288,6 @@ export function StoryContent({
             </section>
           )}
 
-          {/* Who's Affected / What Each Side Is Saying */}
-          {story.sides_saying && story.sides_saying.length > 0 && (
-            <section className="mb-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
-                {getSidesTitle(story.category)}
-              </h2>
-              <div className="space-y-3">
-                {story.sides_saying.map((item, i) => (
-                  <div key={i} className="rounded-xl border border-gray-200 dark:border-white/10 p-4">
-                    <span className="text-sm font-bold text-[#0F172A] dark:text-white">{item.side}</span>
-                    <p className="text-[15px] leading-relaxed text-gray-600 dark:text-white/60 mt-1">{item.position}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Burning Questions */}
-          {story.burning_questions && story.burning_questions.length > 0 && (
-            <section id="questions" className="mb-10 bg-gray-50 dark:bg-white/[0.03] rounded-2xl p-6 sm:p-8 border border-gray-200 dark:border-white/10 scroll-mt-16">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
-                Key Questions
-              </h2>
-              <div className="space-y-5">
-                {story.burning_questions.map((item, i) => (
-                  <div key={i}>
-                    <h3 className="text-[15px] font-bold text-[#0F172A] dark:text-white mb-1">{item.question}</h3>
-                    <p className="text-[15px] leading-relaxed text-gray-600 dark:text-white/60">{item.answer}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* Timeline */}
           {story.timeline_json && story.timeline_json.length > 0 && (
             <section className="mb-10">
@@ -347,42 +298,6 @@ export function StoryContent({
                     <div className="absolute -left-[29px] top-1 w-3 h-3 rounded-full bg-[#F59E0B]" />
                     <span className="text-sm font-bold text-[#0F172A] dark:text-white block">{item.label || item.date}</span>
                     <span className="text-[15px] text-gray-600 dark:text-white/60 leading-relaxed">{item.event}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Uncertainty */}
-          {story.uncertainty && story.uncertainty.length > 0 && (
-            <section className="mb-10 bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-6 sm:p-8 border border-amber-200 dark:border-amber-700/20">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" />
-                What&apos;s Still Unclear
-              </h2>
-              <ul className="space-y-2">
-                {story.uncertainty.map((item, i) => (
-                  <li key={i} className="text-[15px] leading-relaxed text-amber-900 dark:text-amber-200/80 flex items-start gap-2">
-                    <span className="text-amber-500 mt-1">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* Rabbit Holes */}
-          {story.rabbit_holes && story.rabbit_holes.length > 0 && (
-            <section className="mb-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4 flex items-center gap-2">
-                <Lightbulb className="w-4 h-4" />
-                Rabbit Holes
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {story.rabbit_holes.map((hole, i) => (
-                  <div key={i} className="rounded-xl bg-[#0F172A] dark:bg-white/[0.05] p-5">
-                    <h3 className="text-sm font-bold text-white mb-1">{hole.title}</h3>
-                    <p className="text-[14px] text-white/60 leading-relaxed">{hole.description}</p>
                   </div>
                 ))}
               </div>
