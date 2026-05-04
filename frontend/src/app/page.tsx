@@ -4,7 +4,7 @@ const API_URL = "http://localhost:8000/api/v1";
 
 async function getTopics() {
   try {
-    const res = await fetch(`${API_URL}/topics`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/topics`, { next: { revalidate: 60 } });
     if (!res.ok) return [];
     return await res.json();
   } catch {
@@ -14,17 +14,15 @@ async function getTopics() {
 
 async function getCategoryStats(categoryName: string) {
   try {
-    // Fetch top 15 stories to gather enough country diversity for 3 flags
     const res = await fetch(
       `${API_URL}/topics/trending?limit=15&category=${encodeURIComponent(categoryName)}`,
-      { cache: "no-store" }
+      { next: { revalidate: 60 } }
     );
-    if (!res.ok) return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [], isCluster: false };
+    if (!res.ok) return { topScore: 0, storyCount: 0, image: null, angleCountries: [], isCluster: false };
     const stories = await res.json();
-    if (stories.length === 0) return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [], isCluster: false };
+    if (stories.length === 0) return { topScore: 0, storyCount: 0, image: null, angleCountries: [], isCluster: false };
     const top = stories[0];
 
-    // Collect unique country labels across top stories until we have 3
     const seen = new Set<string>();
     const angleCountries: string[] = [];
     for (const story of stories) {
@@ -43,21 +41,17 @@ async function getCategoryStats(categoryName: string) {
       topScore: top.trending_score || 0,
       storyCount: stories.length,
       image: top.image_url || null,
-      sourceCount: top.source_count || 0,
-      countryCount: top.country_count || 0,
       angleCountries,
       isCluster: (top.article_count || 0) >= 2,
     };
   } catch {
-    return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [], isCluster: false };
+    return { topScore: 0, storyCount: 0, image: null, angleCountries: [], isCluster: false };
   }
 }
 
 async function getGlobalTopArticles() {
   try {
-    const res = await fetch(`${API_URL}/articles/top?limit=2`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`${API_URL}/articles/top?limit=2`, { next: { revalidate: 60 } });
     if (!res.ok) return [];
     const data = await res.json();
     return data.articles || [];
@@ -66,22 +60,8 @@ async function getGlobalTopArticles() {
   }
 }
 
-async function getStoryCount(categoryName: string) {
-  try {
-    const res = await fetch(
-      `${API_URL}/topics/trending?limit=100&category=${encodeURIComponent(categoryName)}`,
-      { cache: "no-store" }
-    );
-    if (!res.ok) return 0;
-    const stories = await res.json();
-    return stories.length;
-  } catch {
-    return 0;
-  }
-}
-
 const fallbackImages: Record<string, string> = {
-  world: "https://images.unsplash.com/photo-1504711434969-e33886168d9c?auto=format&fit=crop&w=1200&q=80",
+  world: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=1200&q=80",
   business: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80",
   technology: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
   science: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1200&q=80",
@@ -91,6 +71,7 @@ const fallbackImages: Record<string, string> = {
 };
 
 export default async function Home() {
+  // Single parallel batch — all data fetched at once
   const [topics, globalTop] = await Promise.all([
     getTopics(),
     getGlobalTopArticles(),
@@ -104,14 +85,11 @@ export default async function Home() {
         slug: string;
         trending_label: string | null;
       }) => {
-        const [stats, storyCount] = await Promise.all([
-          getCategoryStats(topic.name),
-          getStoryCount(topic.name),
-        ]);
+        const stats = await getCategoryStats(topic.name);
         return {
           topic: topic.trending_label || topic.name,
           category: topic.name,
-          count: `${storyCount} stories`,
+          count: `${stats.storyCount} stories`,
           image: stats.image || fallbackImages[topic.slug] || fallbackImages["business"],
           slug: topic.slug,
           topScore: stats.topScore,
@@ -122,8 +100,6 @@ export default async function Home() {
     )
   );
 
-  // Sort by top trending score — global importance, not volume
-  // Ensure World & Conflict is always included (it's an international news site)
   const sorted = cardsWithData.sort(
     (a: { topScore: number }, b: { topScore: number }) => b.topScore - a.topScore
   );
