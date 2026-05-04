@@ -14,21 +14,27 @@ async function getTopics() {
 
 async function getCategoryStats(categoryName: string) {
   try {
+    // Fetch top 15 stories to gather enough country diversity for 3 flags
     const res = await fetch(
-      `${API_URL}/topics/trending?limit=1&category=${encodeURIComponent(categoryName)}`,
+      `${API_URL}/topics/trending?limit=15&category=${encodeURIComponent(categoryName)}`,
       { cache: "no-store" }
     );
     if (!res.ok) return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [], isCluster: false };
     const stories = await res.json();
-    if (stories.length === 0) return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [] };
+    if (stories.length === 0) return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [], isCluster: false };
     const top = stories[0];
 
-    // Extract country labels from angles
+    // Collect unique country labels across top stories until we have 3
+    const seen = new Set<string>();
     const angleCountries: string[] = [];
-    if (top.angles && Array.isArray(top.angles)) {
-      for (const angle of top.angles) {
-        if (angle.label) {
-          angleCountries.push(angle.label);
+    for (const story of stories) {
+      if (angleCountries.length >= 3) break;
+      if (story.angles && Array.isArray(story.angles)) {
+        for (const angle of story.angles) {
+          if (angle.label && !seen.has(angle.label) && angleCountries.length < 3) {
+            seen.add(angle.label);
+            angleCountries.push(angle.label);
+          }
         }
       }
     }
@@ -43,7 +49,7 @@ async function getCategoryStats(categoryName: string) {
       isCluster: (top.article_count || 0) >= 2,
     };
   } catch {
-    return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [] };
+    return { topScore: 0, storyCount: 0, image: null, sourceCount: 0, countryCount: 0, angleCountries: [], isCluster: false };
   }
 }
 

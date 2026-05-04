@@ -647,7 +647,7 @@ def fetch_all_articles():
         "cybersecurity hack", "tech startup", "space nasa mars",
         "climate change global warming", "scientific discovery", "pandemic disease",
         "mental health crisis", "NBA NFL championship", "world cup olympics",
-        "UFC boxing MMA", "formula grand prix", "movie film blockbuster",
+        "UFC boxing MMA", "tennis golf cricket", "movie film blockbuster",
         "music concert festival", "celebrity culture fashion", "streaming netflix",
         "election government summit", "earthquake hurricane disaster",
     ]
@@ -736,8 +736,11 @@ def fetch_all_articles():
         "ESPN MLB": ("https://www.espn.com/espn/rss/mlb/news", "sports", "US"),
         "Sky Sports": ("https://www.skysports.com/rss/12040", "sports", "GB"),
         "Sky Football": ("https://www.skysports.com/rss/11095", "sports", "GB"),
-        "Sky F1": ("https://www.skysports.com/rss/11094", "sports", "GB"),
+        "Sky Cricket": ("https://www.skysports.com/rss/11096", "sports", "GB"),
         "CBS Sports": ("https://www.cbssports.com/rss/headlines", "sports", "US"),
+        "Yahoo Sports": ("https://sports.yahoo.com/rss/", "sports", "US"),
+        "Bleacher Report": ("https://bleacherreport.com/articles/feed", "sports", "US"),
+        "NBC Sports": ("https://www.nbcsports.com/rss/", "sports", "US"),
         # ── Entertainment feeds ──
         "Variety": ("https://variety.com/feed/", "entertainment", "US"),
         "Hollywood Reporter": ("https://www.hollywoodreporter.com/feed/", "entertainment", "US"),
@@ -833,10 +836,11 @@ def fetch_all_articles():
     # Google News search feeds — targeted queries for deeper category coverage
     google_search_feeds = {
         "sports": [
-            "NBA playoffs 2026", "NFL draft", "Premier League", "Champions League",
-            "UFC fight", "Formula 1 Grand Prix", "MLB baseball", "tennis grand slam",
-            "World Cup qualifying", "boxing championship", "Olympics 2026",
-            "NHL playoffs", "MMA knockout", "cricket world", "golf masters",
+            "NBA playoffs 2026", "NFL draft picks", "Premier League results",
+            "Champions League", "UFC fight results", "MLB baseball scores",
+            "tennis grand slam", "World Cup qualifying", "boxing championship",
+            "NHL playoffs", "cricket test match", "golf PGA tour",
+            "college basketball", "soccer transfer news", "rugby world",
         ],
         "entertainment": [
             "movie box office", "new album release", "Netflix series", "Oscar nominations",
@@ -1588,6 +1592,19 @@ def main():
                 topic.trending_label = top_event.title[:45]
                 print(f"  {cat}: {top_event.title[:50]}")
         db.commit()
+
+        # Phase 8: Pre-generate briefings for top stories
+        print("\nPhase 8: Pre-generating briefings for top stories...")
+        from app.services.topic_event import generate_story_briefing
+        for cat in CATEGORY_NAMES:
+            cat_name = CATEGORY_NAMES[cat]
+            top_events = db.query(TopicEvent).filter(TopicEvent.category == cat_name).order_by(TopicEvent.trending_score.desc()).limit(2).all()
+            for te in top_events:
+                if te.full_briefing or te.what_changed:
+                    continue
+                print(f"  {cat}: {te.title[:45]}...")
+                generate_story_briefing(te, db)
+                time.sleep(8)  # Stay under rate limits
 
         print(f"\n{'='*50}")
         print(f"DONE")

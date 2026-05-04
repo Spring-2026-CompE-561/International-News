@@ -108,7 +108,11 @@ export default async function StoryPage({
   const useBriefing = hasBriefingContent(story);
 
   return (
-    <main className="flex-1 bg-white dark:bg-[#0a0a0a]">
+    <main className="flex-1 bg-[#FAFAF7] dark:bg-[#0a0a0a] relative">
+      {/* Subtle paper texture overlay */}
+      <div className="absolute inset-0 opacity-[0.4] dark:opacity-0 pointer-events-none mix-blend-multiply" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23a)'/%3E%3C/svg%3E")`,
+      }} />
       {/* Hero */}
       <div className="relative w-full h-[380px] sm:h-[480px]">
         {story.image_url && (
@@ -172,7 +176,6 @@ export default async function StoryPage({
               {story.quick_brief && <a href="#situation" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Situation</a>}
               {story.full_briefing && <a href="#story" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Story</a>}
               {story.angles && story.angles.length > 0 && <a href="#angles" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Angles</a>}
-              {story.burning_questions && story.burning_questions.length > 0 && <a href="#questions" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Questions</a>}
               <a href="#sources" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Sources</a>
             </nav>
           </div>
