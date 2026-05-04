@@ -41,7 +41,7 @@ class ArticleRepository:
 
         if topic_event_id is not None:
             query = query.filter(Article.topic_event_id == topic_event_id)
-        return query.offset(skip).limit(limit).all()
+        return query.order_by(Article.trending_score.desc()).offset(skip).limit(limit).all()
 
     @staticmethod
     def count_filtered(

@@ -15,7 +15,9 @@ class Article(Base):
     published_at = Column(DateTime, nullable=True)
 
     summary = Column(Text, nullable=True)
+    body = Column(Text, nullable=True)
     image_url = Column(String, nullable=True)
+    trending_score = Column(Integer, nullable=True, default=0)
 
     source_id = Column(Integer, ForeignKey("sources.id"), nullable=False)
     topic_id = Column(Integer, ForeignKey("topics.id"), nullable=True)

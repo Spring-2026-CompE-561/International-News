@@ -10,5 +10,6 @@ class Topic(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     slug = Column(String, unique=True, index=True, nullable=False)
+    trending_label = Column(String, nullable=True)
 
     articles = relationship("Article", back_populates="topic")
