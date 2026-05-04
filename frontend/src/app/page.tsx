@@ -1,4 +1,5 @@
 import { TrendingTopics } from "@/components/TrendingTopics";
+import { BookmarkButton } from "@/components/BookmarkButton";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -205,6 +206,7 @@ export default async function Home() {
                           {article.source.name}
                         </div>
                       )}
+                      <BookmarkButton articleId={article.id} />
                     </div>
 
                     <h3 className="text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] font-semibold tracking-[-0.03em] leading-snug text-[#0F172A] dark:text-white group-hover:text-[#0F172A]/80 dark:group-hover:text-white/90 transition-colors">

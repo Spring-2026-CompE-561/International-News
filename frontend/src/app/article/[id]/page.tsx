@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Clock, Newspaper } from "lucide-react";
+import { InlineBookmarkButton } from "@/components/InlineBookmarkButton";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -170,6 +171,7 @@ export default async function ArticlePage({
               <span>{article.region.name}</span>
             </>
           )}
+          <InlineBookmarkButton articleId={article.id} />
         </div>
 
         {/* Summary — lead paragraph */}
@@ -225,15 +227,18 @@ export default async function ArticlePage({
                 )}
               </div>
             </div>
-            <a
-              href={article.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors shrink-0"
-            >
-              Original
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            <div className="flex items-center gap-3 shrink-0">
+              <InlineBookmarkButton articleId={article.id} />
+              <a
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors"
+              >
+                Original
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
         </div>
 
