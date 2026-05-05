@@ -1,27 +1,42 @@
 const STORAGE_KEY = "horizon-story-bookmarks";
 
-export function getStoryBookmarkIds(): number[] {
+export interface StoryBookmark {
+  id: number;
+  title: string;
+  image_url: string | null;
+  category: string;
+  source_count: number;
+  country_count: number;
+  created_at: string;
+}
+
+export function getStoryBookmarks(): StoryBookmark[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if (!Array.isArray(raw)) return [];
+    if (raw.length > 0 && typeof raw[0] === "number") return [];
+    return raw as StoryBookmark[];
   } catch {
     return [];
   }
 }
 
-export function isStoryBookmarked(id: number): boolean {
-  return getStoryBookmarkIds().includes(id);
+export function getStoryBookmarkIds(): number[] {
+  return getStoryBookmarks().map((b) => b.id);
 }
 
-export function toggleStoryBookmark(storyId: number): boolean {
-  const ids = getStoryBookmarkIds();
-  const index = ids.indexOf(storyId);
-  if (index >= 0) {
-    ids.splice(index, 1);
-  } else {
-    ids.push(storyId);
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+export function isStoryBookmarked(id: number): boolean {
+  return getStoryBookmarks().some((b) => b.id === id);
+}
+
+export function toggleStoryBookmark(story: StoryBookmark): boolean {
+  const current = getStoryBookmarks();
+  const exists = current.some((b) => b.id === story.id);
+  const next = exists
+    ? current.filter((b) => b.id !== story.id)
+    : [story, ...current];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   window.dispatchEvent(new Event("story-bookmarks-changed"));
-  return index < 0;
+  return !exists;
 }
