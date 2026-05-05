@@ -11,7 +11,7 @@ import { StoryBookmarkButton } from "@/components/StoryBookmarkButton";
 import { TrackVisit } from "@/components/TrackVisit";
 import { CommentsSection } from "@/components/CommentsSection";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 const LABEL_TO_CODE: Record<string, string> = {
   "united states": "US", "united kingdom": "GB", "france": "FR",

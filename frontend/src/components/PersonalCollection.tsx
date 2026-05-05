@@ -28,20 +28,22 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#3D3D3D] p-4 sm:p-5 flex flex-col hover:border-horizon/40 hover:bg-horizon/[0.02] transition-colors group"
+      className="rounded-xl border border-gray-200 dark:border-white/15 bg-white dark:bg-[#141414] p-4 sm:p-5 flex flex-col hover:border-horizon hover:bg-horizon/10 dark:hover:bg-horizon/25 transition-all group"
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="w-8 h-8 rounded-full bg-horizon/10 flex items-center justify-center text-horizon">
+        <div className="w-8 h-8 rounded-full bg-horizon/10 group-hover:bg-horizon/20 flex items-center justify-center text-horizon transition-colors">
           {icon}
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-white/30">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-white/30 group-hover:text-horizon/70 transition-colors">
           {label}
         </span>
       </div>
       <p className="text-3xl font-bold text-[#183153] dark:text-white mb-2 group-hover:text-horizon transition-colors">
         {value}
       </p>
-      <p className="text-[12px] text-gray-400 dark:text-white/35 leading-snug mt-auto">{description}</p>
+      <p className="text-[12px] text-gray-400 dark:text-white/35 leading-snug mt-auto group-hover:text-horizon/70 transition-colors">
+        {description}
+      </p>
     </Link>
   );
 }
@@ -118,7 +120,7 @@ export function PersonalCollection() {
           <div className="grid grid-cols-3 gap-3 flex-1">
             <StatCard
               href="/bookmarks?tab=saved"
-              icon={<img src="/bookmark-hover.svg" alt="" className="w-4 h-4" />}
+              icon={<img src="/bookmark-hover.svg" alt="" className="w-4 h-4 dark:invert" />}
               label="Saved"
               value={savedCount}
               description="Bookmarked pieces waiting in your hub."
@@ -140,7 +142,7 @@ export function PersonalCollection() {
           </div>
 
           {hubGroups.length > 0 && (
-            <div className="lg:w-64 xl:w-72 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#3D3D3D] p-4 shrink-0">
+            <div className="lg:w-64 xl:w-72 rounded-xl border border-gray-200 dark:border-white/15 bg-white dark:bg-[#141414] p-4 shrink-0">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-white/30">
                   In Your Hub
@@ -154,17 +156,18 @@ export function PersonalCollection() {
               </div>
               <div className="space-y-0">
                 {hubGroups.map((group) => (
-                  <div
+                  <Link
                     key={group.name}
-                    className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-white/[0.06] last:border-0"
+                    href="/bookmarks?tab=saved"
+                    className="group flex items-center justify-between py-3 border-b border-gray-100 dark:border-white/[0.06] last:border-0 hover:bg-horizon/10 dark:hover:bg-horizon/25 -mx-1 px-1 rounded-lg transition-colors"
                   >
-                    <span className="text-[14px] font-semibold text-[#183153] dark:text-white">
+                    <span className="text-[14px] font-semibold text-[#183153] dark:text-white group-hover:text-horizon transition-colors">
                       {group.name}
                     </span>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-gray-400 dark:text-white/30">
+                    <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-gray-400 dark:text-white/30 group-hover:text-horizon/70 transition-colors">
                       {group.count} saved
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
