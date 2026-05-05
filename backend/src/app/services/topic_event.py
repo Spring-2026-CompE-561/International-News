@@ -189,9 +189,8 @@ Two sentences. First: the hard news. Second: why it matters.
 ===STORY===
 Write 5-8 paragraphs. This is the main read — make it flow like a magazine article, not a report. Each paragraph should pull the reader to the next. Cover: what happened, why, who's affected, what different countries see, and what comes next.
 ===ANGLES===
-{chr(10).join(f'{c}: One punchy sentence — what {c} media cares about most in this story. Think TikTok caption energy: bold, opinionated, scroll-stopping. [source name]' for c in countries)}
-===SOURCES===
-Source name (Country): their unique angle or contribution"""
+{chr(10).join(f'{c}: One sharp sentence about what {c} media is focused on. Reference the specific headline angle from that country. Bold, clear, scroll-stopping. [source name]' for c in countries)}
+"""
 
 
 # ── Generation ───────────────────────────────────────────────
@@ -572,8 +571,7 @@ List facts as bullet points:"""
     except Exception as e:
         print(f"    Briefing error: {type(e).__name__}: {e}")
 
-    # Fallback
-    _populate_fallback_content(topic_event, db)
+    # No fallback — seed will retry or skip
 
 
 def _generate_legacy_briefing(topic_event: TopicEvent, db: Session, source_text: str) -> None:
@@ -623,70 +621,6 @@ Use ONLY facts from the sources. Use this EXACT format:
         pass
 
 
-def _populate_fallback_content(topic_event: TopicEvent, db: Session) -> None:
-    """When AI providers are all rate limited, build basic content from article titles."""
-    articles = (
-        db.query(Article)
-        .filter(Article.topic_event_id == topic_event.id)
-        .order_by(Article.trending_score.desc())
-        .limit(8)
-        .all()
-    )
-    if not articles:
-        return
-
-    # Build situation brief from article titles
-    bullets = [a.title for a in articles[:5]]
-    topic_event.quick_brief = json.dumps(bullets)
-
-    # Build a basic hook
-    topic_event.hook = f"{articles[0].title}. Multiple sources are covering this developing story."
-
-    # Build basic what_happened from titles
-    title_summary = " ".join(a.title + "." for a in articles[:4])
-    topic_event.what_happened = title_summary
-
-    # Build angles from actual country data if seed stubs are empty
-    packets = build_source_packets(articles)
-    countries = {}
-    for p in packets:
-        if p["country"] != "Unknown" and p["country"] not in countries:
-            countries[p["country"]] = p["source"]
-    if countries:
-        topic_event.angles = json.dumps([
-            {"label": name, "type": "country", "summary": f"Covered by {src}.", "source_names": [src]}
-            for name, src in countries.items()
-        ])
-
-    db.commit()
-    db.refresh(topic_event)
-
-
 def get_topic_event_by_id(db: Session, topic_event_id: int) -> TopicEvent | None:
-    topic_event = TopicEventRepository.get_by_id(db, topic_event_id)
-    if not topic_event:
-        return None
-
-    needs_briefing = not topic_event.full_briefing and not topic_event.what_happened
-
-    if needs_briefing:
-        # Populate fallback content immediately so the page isn't empty
-        if not topic_event.hook:
-            _populate_fallback_content(topic_event, db)
-
-        # Try AI generation in a background thread so the response isn't blocked
-        import threading
-        def _bg_generate(event_id):
-            from app.core.database import SessionLocal
-            bg_db = SessionLocal()
-            try:
-                te = TopicEventRepository.get_by_id(bg_db, event_id)
-                if te and not te.full_briefing and not te.what_happened:
-                    generate_story_briefing(te, bg_db)
-            finally:
-                bg_db.close()
-
-        thread = threading.Thread(target=_bg_generate, args=(topic_event_id,), daemon=True)
-        thread.start()
-
-    return topic_event
+    """Fetch a story. All content is pre-generated during seeding."""
+    return TopicEventRepository.get_by_id(db, topic_event_id)
