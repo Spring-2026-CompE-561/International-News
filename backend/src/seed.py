@@ -1500,8 +1500,9 @@ def main():
                     cluster["polished_title"] = cluster["representative_title"]
                     print(f"    ✗ Using original title")
 
-        # Store everything
-        print("\nStoring...")
+        # Store top 25 per category only
+        MAX_PER_CATEGORY = 25
+        print(f"\nStoring (top {MAX_PER_CATEGORY} per category)...")
         total_stories = 0
         total_articles = 0
 
@@ -1510,7 +1511,7 @@ def main():
             cat_name = CATEGORY_NAMES[cat]
             images = CATEGORY_IMAGE_POOLS.get(cat, CATEGORY_IMAGE_POOLS["world"])
 
-            for ci, cluster in enumerate(cat_clusters):
+            for ci, cluster in enumerate(cat_clusters[:MAX_PER_CATEGORY]):
                 title = cluster.get("polished_title", cluster["representative_title"])
                 clean_title = re.sub(r'\s*[|]\s*.*$', '', title).strip()
                 if len(clean_title) > 60:
@@ -1525,10 +1526,18 @@ def main():
                     cc = a.get("country_code", "US")
                     cname = COUNTRIES_CONFIG.get(cc, {}).get("name", "")
                     if cname and cname not in cluster_countries:
-                        cluster_countries[cname] = a.get("source_name", "Unknown")
+                        cluster_countries[cname] = {
+                            "source": a.get("source_name", "Unknown"),
+                            "headline": a.get("title", ""),
+                        }
                 seed_angles = json.dumps([
-                    {"label": country_name, "type": "country", "summary": "", "source_names": [src]}
-                    for country_name, src in list(cluster_countries.items())[:5]
+                    {
+                        "label": country_name,
+                        "type": "country",
+                        "summary": f"{info['source']} reports: {info['headline'][:80]}",
+                        "source_names": [info["source"]],
+                    }
+                    for country_name, info in list(cluster_countries.items())[:5]
                 ]) if cluster_countries else None
 
                 te = TopicEvent(
@@ -1589,27 +1598,39 @@ def main():
             cat_name = CATEGORY_NAMES[cat]
             top_event = db.query(TopicEvent).filter(TopicEvent.category == cat_name).order_by(TopicEvent.trending_score.desc()).first()
             if top_event:
-                topic.trending_label = top_event.title[:45]
+                topic.trending_label = top_event.title[:42] + "..." if len(top_event.title) > 45 else top_event.title
                 print(f"  {cat}: {top_event.title[:50]}")
         db.commit()
 
-        # Phase 8: Pre-generate briefings for top stories
-        print("\nPhase 8: Pre-generating briefings for top stories...")
+        # Phase 8: Pre-generate briefings for ALL stories
+        print(f"\nPhase 8: Pre-generating briefings for all {total_stories} stories...")
         from app.services.topic_event import generate_story_briefing
+        generated = 0
+        failed = 0
         for cat in CATEGORY_NAMES:
             cat_name = CATEGORY_NAMES[cat]
-            top_events = db.query(TopicEvent).filter(TopicEvent.category == cat_name).order_by(TopicEvent.trending_score.desc()).limit(2).all()
-            for te in top_events:
-                if te.full_briefing or te.what_changed:
+            events = db.query(TopicEvent).filter(TopicEvent.category == cat_name).order_by(TopicEvent.trending_score.desc()).all()
+            print(f"\n  {cat} ({len(events)} stories):")
+            for i, te in enumerate(events):
+                if te.full_briefing:
+                    generated += 1
                     continue
-                print(f"  {cat}: {te.title[:45]}...")
+                print(f"    [{i+1}/{len(events)}] {te.title[:45]}...", end=" ", flush=True)
                 generate_story_briefing(te, db)
-                time.sleep(8)  # Stay under rate limits
+                if te.full_briefing:
+                    generated += 1
+                    print("✓")
+                else:
+                    failed += 1
+                    print("✗")
+                time.sleep(3)  # Stay under rate limits
 
         print(f"\n{'='*50}")
         print(f"DONE")
         print(f"  Stories:  {total_stories}")
         print(f"  Articles: {total_articles}")
+        print(f"  Briefings generated: {generated}")
+        print(f"  Briefings failed: {failed}")
         for cat in CATEGORY_NAMES:
             count = db.query(TopicEvent).filter(TopicEvent.category == CATEGORY_NAMES[cat]).count()
             print(f"  {cat}: {count} stories")
