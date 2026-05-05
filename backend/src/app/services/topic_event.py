@@ -188,14 +188,8 @@ Two sentences. First: the hard news. Second: why it matters.
 • Why it matters now
 ===STORY===
 Write 5-8 paragraphs. This is the main read — make it flow like a magazine article, not a report. Each paragraph should pull the reader to the next. Cover: what happened, why, who's affected, what different countries see, and what comes next.
-===CHANGED===
-The single newest development. 2-3 crisp sentences.
-===MATTERS===
-The consequences. Who wins, who loses, what's at risk. 2-3 sentences.
 ===ANGLES===
-{chr(10).join(f'{c}: What {c} media coverage reveals about their perspective [source name]' for c in countries)}
-===TIMELINE===
-Latest — event
+{chr(10).join(f'{c}: One punchy sentence — what {c} media cares about most in this story. Think TikTok caption energy: bold, opinionated, scroll-stopping. [source name]' for c in countries)}
 ===SOURCES===
 Source name (Country): their unique angle or contribution"""
 
@@ -384,7 +378,7 @@ def store_briefing_from_text(topic_event, content):
         angles = _parse_angles(angles_text)
         # Only use AI angles if they have real country labels, not garbage like "Name"
         valid_angles = [a for a in angles if a.get("label") and a["label"] not in ("Name", "name", "", "Country")]
-        if valid_angles and len(valid_angles) >= 2:
+        if valid_angles:
             topic_event.angles = json.dumps(valid_angles)
             topic_event.global_perspective = angles_text
     if timeline_text:
@@ -673,7 +667,7 @@ def get_topic_event_by_id(db: Session, topic_event_id: int) -> TopicEvent | None
     if not topic_event:
         return None
 
-    needs_briefing = not topic_event.full_briefing and not topic_event.what_changed and not topic_event.what_happened
+    needs_briefing = not topic_event.full_briefing and not topic_event.what_happened
 
     if needs_briefing:
         # Populate fallback content immediately so the page isn't empty
@@ -687,7 +681,7 @@ def get_topic_event_by_id(db: Session, topic_event_id: int) -> TopicEvent | None
             bg_db = SessionLocal()
             try:
                 te = TopicEventRepository.get_by_id(bg_db, event_id)
-                if te and not te.full_briefing and not te.what_changed:
+                if te and not te.full_briefing and not te.what_happened:
                     generate_story_briefing(te, bg_db)
             finally:
                 bg_db.close()

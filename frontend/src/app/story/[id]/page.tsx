@@ -11,6 +11,19 @@ import { StoryBookmarkButton } from "@/components/StoryBookmarkButton";
 
 const API_URL = "http://localhost:8000/api/v1";
 
+const LABEL_TO_CODE: Record<string, string> = {
+  "united states": "US", "united kingdom": "GB", "france": "FR",
+  "germany": "DE", "australia": "AU", "canada": "CA", "india": "IN",
+  "japan": "JP", "brazil": "BR", "south africa": "ZA", "uae": "AE",
+  "united arab emirates": "AE", "china": "CN", "russia": "RU",
+  "israel": "IL", "mexico": "MX", "iran": "IR", "ukraine": "UA",
+  "taiwan": "TW", "south korea": "KR", "italy": "IT", "spain": "ES",
+  "turkey": "TR", "saudi arabia": "SA", "egypt": "EG", "nigeria": "NG",
+  "pakistan": "PK", "indonesia": "ID", "netherlands": "NL",
+  "sweden": "SE", "switzerland": "CH", "poland": "PL", "argentina": "AR",
+  "europe": "EU", "european union": "EU",
+};
+
 interface Story {
   id: number;
   title: string;
@@ -51,7 +64,7 @@ interface SourceArticle {
 
 async function getStory(id: string): Promise<Story | null> {
   try {
-    const res = await fetch(`${API_URL}/topics/${id}`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/topics/${id}`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -170,14 +183,78 @@ export default async function StoryPage({
         </div>
       </div>
 
+      {/* World Perspectives — horizontal scroll under hero */}
+      {story.angles && story.angles.length > 0 && (
+        <section id="angles" className="bg-black scroll-mt-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe className="w-5 h-5 text-[#F59E0B]" />
+              <h2 className="text-[13px] font-bold uppercase tracking-[0.2em] text-white">
+                World Perspectives
+              </h2>
+              <span className="text-[12px] text-white/30 ml-2">
+                How different countries are covering this story
+              </span>
+            </div>
+
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+              {story.angles.map((angle: { label: string; angle?: string; summary?: string; type?: string; source_names?: string[] }, i: number) => {
+                const code = LABEL_TO_CODE[angle.label.toLowerCase().trim()];
+                return (
+                  <div key={i} className="group shrink-0 w-[280px] sm:w-[300px]">
+                    <div className="relative rounded-xl overflow-hidden bg-[#0F172A] border border-white/[0.1] p-5 h-full">
+                      <div className="flex items-center gap-3 mb-3">
+                        {code ? (
+                          <img
+                            src={`https://flagcdn.com/w80/${code.toLowerCase()}.png`}
+                            alt={angle.label}
+                            className="w-10 h-10 rounded-full object-cover border-2 border-white/20 shadow-lg"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-[#F59E0B]/20 border-2 border-[#F59E0B]/30 flex items-center justify-center">
+                            <Globe className="w-5 h-5 text-[#F59E0B]" />
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="text-[15px] font-bold text-white">{angle.label}</h3>
+                          {angle.type && angle.type !== "country" && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-[#F59E0B]">
+                              {angle.type}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-[13px] leading-relaxed text-white/70 line-clamp-4">
+                        {(angle.summary && angle.summary.length > 5) || (angle.angle && angle.angle.length > 5)
+                          ? (angle.summary || angle.angle)
+                          : `Reporting on this story from a ${angle.label} media perspective.`}
+                      </p>
+                      {angle.source_names && angle.source_names.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {angle.source_names.map((src: string, j: number) => (
+                            <span key={j} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/[0.1] text-white/50 border border-white/[0.08]">
+                              {src}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Sticky mini-nav */}
       {useBriefing && (
         <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-6 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 dark:text-white/30 overflow-x-auto">
-              {story.quick_brief && <a href="#situation" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Situation</a>}
+              {story.quick_brief && <a href="#situation" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Overview</a>}
               {story.full_briefing && <a href="#story" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Story</a>}
-              {story.angles && story.angles.length > 0 && <a href="#angles" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Angles</a>}
+              {story.angles && story.angles.length > 0 && <a href="#angles" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Perspectives</a>}
               <a href="#sources" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Sources</a>
             </nav>
           </div>

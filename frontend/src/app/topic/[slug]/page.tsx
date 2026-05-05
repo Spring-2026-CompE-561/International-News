@@ -18,7 +18,7 @@ interface Story {
 
 async function getTopicBySlug(slug: string) {
   try {
-    const res = await fetch(`${API_URL}/topics`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/topics`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
     const topics = await res.json();
     return topics.find((t: { slug: string }) => t.slug === slug) || null;
@@ -31,7 +31,7 @@ async function getStoriesForCategory(categoryName: string) {
   try {
     const res = await fetch(
       `${API_URL}/topics/trending?limit=100&category=${encodeURIComponent(categoryName)}`,
-      { cache: "no-store" }
+      { next: { revalidate: 60 } }
     );
     if (!res.ok) return [];
     const stories: Story[] = await res.json();

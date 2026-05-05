@@ -18,7 +18,7 @@ interface Article {
 async function getGlobalArticles(): Promise<Article[]> {
   try {
     const res = await fetch(`${API_URL}/articles/top?limit=30`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
     if (!res.ok) return [];
     const data = await res.json();
