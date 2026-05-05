@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Clock, Newspaper } from "lucide-react";
 import { InlineBookmarkButton } from "@/components/InlineBookmarkButton";
+import { TrackVisit } from "@/components/TrackVisit";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -76,6 +77,7 @@ export default async function ArticlePage({
 
   return (
     <main className="flex-1 bg-[#FAFAF7] dark:bg-[#0a0a0a] relative">
+      <TrackVisit id={article.id} type="article" title={article.title} image_url={article.image_url} category={article.topic?.name ?? null} />
       {/* Subtle paper texture overlay */}
       <div className="absolute inset-0 opacity-[0.4] dark:opacity-0 pointer-events-none mix-blend-multiply" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23a)'/%3E%3C/svg%3E")`,
@@ -171,7 +173,7 @@ export default async function ArticlePage({
               <span>{article.region.name}</span>
             </>
           )}
-          <InlineBookmarkButton articleId={article.id} />
+          <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
         </div>
 
         {/* Summary — lead paragraph */}
@@ -228,7 +230,7 @@ export default async function ArticlePage({
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              <InlineBookmarkButton articleId={article.id} />
+              <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
               <a
                 href={article.url}
                 target="_blank"
