@@ -1,5 +1,6 @@
 import { TrendingTopics } from "@/components/TrendingTopics";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { PersonalCollection } from "@/components/PersonalCollection";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -124,7 +125,10 @@ export default async function Home() {
         <div className="h-px bg-gray-200 dark:bg-[#1f1f1f] dark:opacity-90 my-2" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-6">
+        <div className="border border-gray-200 dark:border-white/10 rounded-2xl bg-gray-50/60 dark:bg-[#111111] overflow-hidden">
+          <PersonalCollection />
+          <div className="px-6 sm:px-8 pt-6 pb-8">
         {globalTop.length > 0 && (
           <section className="mb-5 sm:mb-6 lg:mb-7">
               <div className="flex items-start justify-between gap-3 mb-4 sm:mb-5">
@@ -182,7 +186,7 @@ export default async function Home() {
                           {article.source.name}
                         </div>
                       )}
-                      <BookmarkButton articleId={article.id} />
+                      <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
                     </div>
 
                     <h3 className="text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] font-semibold tracking-[-0.03em] leading-snug text-[#0F172A] dark:text-white group-hover:text-[#0F172A]/80 dark:group-hover:text-white/90 transition-colors">
@@ -193,6 +197,8 @@ export default async function Home() {
               </div>
           </section>
         )}
+          </div>
+        </div>
       </div>
     </main>
   );

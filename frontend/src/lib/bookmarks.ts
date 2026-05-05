@@ -1,6 +1,15 @@
 const STORAGE_KEY = "horizon-bookmarks";
 
-export function getBookmarkIds(): number[] {
+export interface ArticleBookmark {
+  id: number;
+  title?: string;
+  topic?: string;
+  source?: string;
+  image_url?: string;
+  published_at?: string;
+}
+
+export function getBookmarks(): ArticleBookmark[] {
   if (typeof window === "undefined") return [];
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -9,15 +18,23 @@ export function getBookmarkIds(): number[] {
   }
 }
 
-export function toggleBookmark(articleId: number): boolean {
-  const ids = getBookmarkIds();
-  const index = ids.indexOf(articleId);
+export function getBookmarkIds(): number[] {
+  return getBookmarks().map((b) => b.id);
+}
+
+export function isBookmarked(articleId: number): boolean {
+  return getBookmarks().some((b) => b.id === articleId);
+}
+
+export function toggleBookmark(article: ArticleBookmark): boolean {
+  const bookmarks = getBookmarks();
+  const index = bookmarks.findIndex((b) => b.id === article.id);
   if (index >= 0) {
-    ids.splice(index, 1);
+    bookmarks.splice(index, 1);
   } else {
-    ids.push(articleId);
+    bookmarks.push(article);
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
   window.dispatchEvent(new Event("bookmarks-changed"));
   return index < 0;
 }

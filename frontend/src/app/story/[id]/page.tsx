@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { StoryContent } from "@/components/StoryContent";
 import { StoryBookmarkButton } from "@/components/StoryBookmarkButton";
+import { TrackVisit } from "@/components/TrackVisit";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -123,6 +124,7 @@ export default async function StoryPage({
 
   return (
     <main className="flex-1 bg-[#FAFAF7] dark:bg-[#0a0a0a] relative">
+      <TrackVisit id={story.id} type="story" title={story.title} image_url={story.image_url} category={story.category} />
       {/* Subtle paper texture overlay */}
       <div className="absolute inset-0 opacity-[0.4] dark:opacity-0 pointer-events-none mix-blend-multiply" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23a)'/%3E%3C/svg%3E")`,
@@ -178,7 +180,7 @@ export default async function StoryPage({
               <Clock className="w-4 h-4" />
               <span>{timeAgo(story.updated_at)}</span>
             </div>
-            <StoryBookmarkButton storyId={story.id} />
+            <StoryBookmarkButton story={{ id: story.id, title: story.title, image_url: story.image_url, category: story.category, source_count: story.source_count, country_count: story.country_count, created_at: story.created_at }} />
           </div>
         </div>
       </div>
