@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 
 from app.core.auth import get_password_hash, verify_password
 from app.repository.user import UserRepository
-from app.schemas.user import User, UserCreate, UserDb
+from app.schemas.user import User, UserCreate, UserDb, UserProfileUpdate
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -76,6 +76,14 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
             )
         self.repository.delete(db, user)
+
+    def update_profile(self, db: Session, user_id: int, data: UserProfileUpdate) -> User:
+        user = self.repository.get_by_id(db, user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+        for field, value in data.model_dump(exclude_unset=True).items():
+            setattr(user, field, value)
+        return self.repository.update(db, user)
 
     def authenticate(self, db: Session, email: str, password: str) -> User | None:
         user = self.repository.get_by_mail(db, email)

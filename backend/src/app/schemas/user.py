@@ -1,21 +1,12 @@
-"""User schemas.
-
-This module defines Pydantic schemas for user data validation and serialization.
-"""
-
 from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
-    """Base user schema."""
-
     email: EmailStr
     username: str
 
 
 class UserCreate(UserBase):
-    """Schema for creating a new user."""
-
     password: str
 
 
@@ -24,7 +15,23 @@ class UserDb(UserBase):
 
 
 class User(UserBase):
-    """Schema for user response."""
-
     id: int
     model_config = {"from_attributes": True}
+
+
+class UserProfile(UserBase):
+    """Full profile — includes optional fields editable on /account."""
+    id: int
+    display_name: str | None = None
+    bio: str | None = None
+    country: str | None = None
+    city: str | None = None
+    model_config = {"from_attributes": True}
+
+
+class UserProfileUpdate(BaseModel):
+    """Payload for PATCH /users/me/profile."""
+    display_name: str | None = None
+    bio: str | None = None
+    country: str | None = None
+    city: str | None = None
