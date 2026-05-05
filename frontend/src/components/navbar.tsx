@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogIn, Menu, UserRoundPlus } from "lucide-react";
+import { NavBookmarkIcon } from "@/components/NavBookmarkIcon";
 
 export function Navbar() {
 	return (
@@ -37,6 +38,7 @@ function MobileNavbar() {
 					<LogoMobile />
 				</div>
 				<div className="flex items-center gap-2">
+					<NavBookmarkIcon />
 					<ModeToggle />
 					<UserButton />
 				</div>
@@ -72,6 +74,7 @@ function DesktopNavbar() {
 					>
 						<UserRoundPlus />
 					</Link>
+					<NavBookmarkIcon />
 					<ModeToggle />
 					<UserButton />
 				</div>

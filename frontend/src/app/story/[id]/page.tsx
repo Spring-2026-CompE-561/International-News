@@ -7,6 +7,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { StoryContent } from "@/components/StoryContent";
+import { StoryBookmarkButton } from "@/components/StoryBookmarkButton";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -164,6 +165,7 @@ export default async function StoryPage({
               <Clock className="w-4 h-4" />
               <span>{timeAgo(story.updated_at)}</span>
             </div>
+            <StoryBookmarkButton storyId={story.id} />
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
+import { BookmarkButton } from "@/components/BookmarkButton";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -109,6 +110,7 @@ export default async function GlobalPage() {
                       </>
                     )}
                   </div>
+                  <BookmarkButton articleId={article.id} />
                 </div>
 
                 <h3 className="text-[1.1rem] sm:text-[1.3rem] lg:text-[1.5rem] font-semibold tracking-[-0.04em] leading-[1.05] text-[#0F172A] dark:text-white group-hover:text-[#0F172A]/80 dark:group-hover:text-white/90 transition-colors">
@@ -131,12 +133,13 @@ export default async function GlobalPage() {
               className="group flex gap-4 sm:gap-5 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-white/[0.02] -mx-3 px-3 rounded-lg transition-colors"
             >
               {article.image_url && (
-                <div className="w-28 h-20 sm:w-36 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#2a2a2a]">
+                <div className="relative w-28 h-20 sm:w-36 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#2a2a2a]">
                   <img
                     src={article.image_url}
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  <BookmarkButton articleId={article.id} />
                 </div>
               )}
               <div className="flex-1 min-w-0">
