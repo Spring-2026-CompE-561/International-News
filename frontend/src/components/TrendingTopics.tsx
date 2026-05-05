@@ -55,11 +55,11 @@ export function TrendingTopics({ topics }: TrendingTopicsProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10 group-hover:from-black/70 transition-all duration-300" />
 
                 {topic.isCluster && (
-                  <div className="absolute top-2.5 right-3 z-10">
+                  <div className="absolute top-2.5 right-3 z-10 text-right">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white drop-shadow-lg block">
                       Horizon News
                     </span>
-                    <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-white/60 drop-shadow-lg block mt-0.5">
+                    <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-horizon drop-shadow-lg block mt-0.5">
                       Story
                     </span>
                   </div>
