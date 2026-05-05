@@ -2,7 +2,7 @@ import { TrendingTopics } from "@/components/TrendingTopics";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { PersonalCollection } from "@/components/PersonalCollection";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 async function getTopics() {
   try {

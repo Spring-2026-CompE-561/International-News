@@ -12,7 +12,7 @@ import { COUNTRIES, countryCode } from "@/lib/countries";
 import type { ArticleBookmark } from "@/lib/bookmarks";
 import type { StoryBookmark } from "@/lib/storyBookmarks";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 type Tab = "profile" | "saved" | "history" | "comments";
 

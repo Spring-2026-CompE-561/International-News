@@ -5,7 +5,7 @@ import { useUser } from "@/contexts/UserContext";
 import { getAuthHeaders, isLoggedIn } from "@/lib/auth";
 import { countryCode } from "@/lib/countries";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 interface Comment {
   id: number;
@@ -76,7 +76,11 @@ export function CommentsSection({ articleId, storyId }: Props) {
     }
   }, [endpoint]);
 
-  useEffect(() => { fetchComments(); }, [fetchComments]);
+  useEffect(() => {
+    fetchComments();
+    const interval = setInterval(fetchComments, 15000);
+    return () => clearInterval(interval);
+  }, [fetchComments]);
 
   const postComment = async (e: React.FormEvent<HTMLFormElement & EventTarget>) => {
     e.preventDefault();

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { BookmarkButton } from "@/components/BookmarkButton";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 interface Article {
   id: number;

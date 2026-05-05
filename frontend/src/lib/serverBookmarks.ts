@@ -1,6 +1,6 @@
 import { getAuthHeaders } from "@/lib/auth";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 const ID_MAP_KEY = "horizon-bm-ids"; // { "a-123": 456, "s-789": 321 }
 
 type BmKey = string;

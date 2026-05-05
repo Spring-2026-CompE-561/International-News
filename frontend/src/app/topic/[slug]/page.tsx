@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Newspaper, Globe, Clock } from "lucide-react";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 interface Story {
   id: number;

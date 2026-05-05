@@ -4,7 +4,7 @@ import { InlineBookmarkButton } from "@/components/InlineBookmarkButton";
 import { TrackVisit } from "@/components/TrackVisit";
 import { CommentsSection } from "@/components/CommentsSection";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 interface Article {
   id: number;

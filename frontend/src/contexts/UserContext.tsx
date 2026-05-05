@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { getToken, clearToken, isLoggedIn } from "@/lib/auth";
 
-const API_URL = "http://localhost:8000/api/v1";
+import { API_URL } from "@/lib/api";
 
 export interface UserProfile {
   id: number;
