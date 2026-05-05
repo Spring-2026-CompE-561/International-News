@@ -1,17 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getBookmarkIds, toggleBookmark } from "@/lib/bookmarks";
+import { isBookmarked, toggleBookmark, type ArticleBookmark } from "@/lib/bookmarks";
 
-export function BookmarkButton({ articleId }: { articleId: number }) {
+export function BookmarkButton({ article }: { article: ArticleBookmark }) {
   const [saved, setSaved] = useState(false);
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    setSaved(getBookmarkIds().includes(articleId));
-    const handler = () => setSaved(getBookmarkIds().includes(articleId));
+    setSaved(isBookmarked(article.id));
+    const handler = () => setSaved(isBookmarked(article.id));
     window.addEventListener("bookmarks-changed", handler);
     return () => window.removeEventListener("bookmarks-changed", handler);
-  }, [articleId]);
+  }, [article.id]);
 
   const icon = saved || hovered ? "/bookmark-hover.svg" : "/small-bookmark.svg";
 
@@ -20,7 +20,7 @@ export function BookmarkButton({ articleId }: { articleId: number }) {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        setSaved(toggleBookmark(articleId));
+        setSaved(toggleBookmark(article));
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
