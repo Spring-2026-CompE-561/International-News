@@ -373,13 +373,7 @@ def store_briefing_from_text(topic_event, content):
     if matters:
         topic_event.big_picture = json.dumps({"heading": "Why this matters", "body": matters})
         topic_event.why_it_matters = matters
-    if angles_text:
-        angles = _parse_angles(angles_text)
-        # Only use AI angles if they have real country labels, not garbage like "Name"
-        valid_angles = [a for a in angles if a.get("label") and a["label"] not in ("Name", "name", "", "Country")]
-        if valid_angles:
-            topic_event.angles = json.dumps(valid_angles)
-            topic_event.global_perspective = angles_text
+    # Angles are set during seeding from real article data — never overwrite with AI output
     if timeline_text:
         timeline = _parse_timeline(timeline_text)
         if timeline:

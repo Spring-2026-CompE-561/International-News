@@ -10,6 +10,49 @@ from app.models.article import Article
 api_router = APIRouter(prefix="/articles", tags=["articles"])
 
 
+@api_router.get("/offradar", response_model=ArticleSearchResponse)
+def get_offradar_articles(
+    db: Annotated[Session, Depends(get_db)],
+    limit: Annotated[int, Query(ge=1, le=20)] = 6,
+) -> ArticleSearchResponse:
+    """Get lesser-known stories — lower-ranked but interesting. One per cluster, randomized."""
+    from app.models.topic_event import TopicEvent
+    from sqlalchemy import func as sqlfunc
+
+    # Get mid-to-low ranked events (skip top 5 per category, pick from the rest)
+    categories = ["World & Conflict", "Business & Economy", "Technology", "Science", "Health", "Sports", "Entertainment"]
+    top_ids = set()
+    for cat in categories:
+        tops = db.query(TopicEvent.id).filter(TopicEvent.category == cat).order_by(TopicEvent.trending_score.desc()).limit(5).all()
+        top_ids.update(t[0] for t in tops)
+
+    # Get random events from the remaining pool that have images
+    events = (
+        db.query(TopicEvent)
+        .filter(
+            TopicEvent.id.notin_(top_ids),
+            TopicEvent.image_url != None,
+            TopicEvent.image_url != "",
+        )
+        .order_by(sqlfunc.random())
+        .limit(limit)
+        .all()
+    )
+
+    articles = []
+    for event in events:
+        candidates = db.query(Article).filter(Article.topic_event_id == event.id).all()
+        if not candidates:
+            continue
+        with_image = [a for a in candidates if a.image_url and len(a.image_url) > 10]
+        best = with_image[0] if with_image else candidates[0]
+        if (not best.image_url or best.image_url == "") and event.image_url:
+            best.image_url = event.image_url
+        articles.append(best)
+
+    return ArticleSearchResponse(total=len(articles), articles=articles)
+
+
 @api_router.get("/top", response_model=ArticleSearchResponse)
 def get_top_articles(
     db: Annotated[Session, Depends(get_db)],

@@ -41,13 +41,24 @@ async function getCategoryStats(categoryName: string) {
 
     return {
       topScore: top.trending_score || 0,
-      storyCount: stories.length,
+      storyCount: stories.length >= 15 ? 25 : stories.length,
       image: top.image_url || null,
       angleCountries,
       isCluster: (top.article_count || 0) >= 2,
     };
   } catch {
     return { topScore: 0, storyCount: 0, image: null, angleCountries: [], isCluster: false };
+  }
+}
+
+async function getOffRadarStories() {
+  try {
+    const res = await fetch(`${API_URL}/articles/offradar?limit=6`, { next: { revalidate: 60 } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.articles || [];
+  } catch {
+    return [];
   }
 }
 
@@ -74,9 +85,10 @@ const fallbackImages: Record<string, string> = {
 
 export default async function Home() {
   // Single parallel batch — all data fetched at once
-  const [topics, globalTop] = await Promise.all([
+  const [topics, globalTop, offRadar] = await Promise.all([
     getTopics(),
     getGlobalTopArticles(),
+    getOffRadarStories(),
   ]);
 
   const cardsWithData = await Promise.all(
@@ -195,6 +207,137 @@ export default async function Home() {
                   </a>
                 ))}
               </div>
+          </section>
+        )}
+
+        {/* Off Radar */}
+        {offRadar.length > 0 && (
+          <section className="border-t border-gray-200 dark:border-white/10 pt-6 sm:pt-7">
+            <div className="grid grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)] gap-0 border-b border-gray-200 dark:border-white/15">
+              <div className="pb-5 sm:pb-6 xl:pr-6 xl:border-r xl:border-gray-200 dark:xl:border-white/15">
+                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.22em] text-horizon">
+                  Undercovered
+                </span>
+                <h2 className="text-[1.4rem] sm:text-[1.6rem] lg:text-[1.8rem] font-semibold tracking-[-0.05em] text-[#0F172A] dark:text-white leading-none mt-2">
+                  Off Radar
+                </h2>
+                <p className="mt-3 text-[13px] sm:text-[14px] leading-6 text-gray-600 dark:text-white/58 max-w-[18rem]">
+                  Important stories that are moving before they become the main headline.
+                </p>
+              </div>
+
+              <div className="xl:pl-6 pt-5 xl:pt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_0.9fr] gap-0">
+                  {/* Lead story — large image */}
+                  {offRadar[0] && (
+                    <a
+                      href={`/story/${offRadar[0].topic_event?.id || offRadar[0].id}`}
+                      className="group relative min-h-[360px] sm:min-h-[430px] lg:min-h-[500px] overflow-hidden border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-white/15"
+                    >
+                      {offRadar[0].image_url && (
+                        <img
+                          src={offRadar[0].image_url}
+                          alt={offRadar[0].title}
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+
+                      <div className="absolute left-0 right-0 bottom-0 p-5 sm:p-6 lg:p-7">
+                        <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/65 mb-3">
+                          <span className="font-semibold text-horizon">{offRadar[0].topic?.name || "News"}</span>
+                          {offRadar[0].source && (
+                            <>
+                              <span>•</span>
+                              <span>{offRadar[0].source.name}</span>
+                            </>
+                          )}
+                        </div>
+
+                        <h3 className="max-w-[36rem] text-[1.2rem] sm:text-[1.4rem] lg:text-[1.6rem] font-semibold tracking-[-0.045em] leading-[1.03] text-white">
+                          {offRadar[0].title}
+                        </h3>
+                      </div>
+                    </a>
+                  )}
+
+                  {/* Side stories — stacked */}
+                  <div className="grid grid-cols-1 divide-y divide-gray-200 dark:divide-white/15">
+                    {offRadar.slice(1, 3).map((story: {
+                      id: number;
+                      title: string;
+                      image_url: string | null;
+                      source: { name: string } | null;
+                      topic: { name: string } | null;
+                      topic_event?: { id: number } | null;
+                    }, index: number) => (
+                      <a
+                        key={index}
+                        href={`/story/${story.topic_event?.id || story.id}`}
+                        className="group grid grid-cols-[120px_minmax(0,1fr)] sm:grid-cols-[140px_minmax(0,1fr)] gap-4 p-4 sm:p-5 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+                      >
+                        <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-white/5">
+                          {story.image_url && (
+                            <img
+                              src={story.image_url}
+                              alt={story.title}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                            />
+                          )}
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-gray-500 dark:text-white/45 mb-2">
+                            <span className="font-semibold text-horizon">{story.topic?.name || "News"}</span>
+                            {story.source && (
+                              <>
+                                <span>•</span>
+                                <span>{story.source.name}</span>
+                              </>
+                            )}
+                          </div>
+
+                          <h3 className="text-[1rem] sm:text-[1.08rem] font-semibold leading-[1.14] text-[#0F172A] dark:text-white group-hover:text-horizon transition-colors">
+                            {story.title}
+                          </h3>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom row — 3 text stories */}
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-white/15">
+              {offRadar.slice(3, 6).map((story: {
+                id: number;
+                title: string;
+                source: { name: string } | null;
+                topic: { name: string } | null;
+                topic_event?: { id: number } | null;
+              }, index: number) => (
+                <a
+                  key={index}
+                  href={`/story/${story.topic_event?.id || story.id}`}
+                  className="group px-0 md:px-5 py-4 sm:py-5 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+                >
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-gray-500 dark:text-white/45 mb-2">
+                    <span className="font-semibold text-horizon">{story.topic?.name || "News"}</span>
+                    {story.source && (
+                      <>
+                        <span>•</span>
+                        <span>{story.source.name}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <h3 className="text-[1rem] sm:text-[1.07rem] font-semibold leading-[1.14] text-[#0F172A] dark:text-white group-hover:text-horizon transition-colors">
+                    {story.title}
+                  </h3>
+                </a>
+              ))}
+            </div>
           </section>
         )}
           </div>
