@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { isStoryBookmarked, toggleStoryBookmark } from "@/lib/storyBookmarks";
+import { addToServer, removeFromServer } from "@/lib/serverBookmarks";
 
 export function StoryBookmarkButton({ storyId }: { storyId: number }) {
   const [saved, setSaved] = useState(false);
@@ -17,7 +18,12 @@ export function StoryBookmarkButton({ storyId }: { storyId: number }) {
 
   return (
     <button
-      onClick={() => setSaved(toggleStoryBookmark(storyId))}
+      onClick={() => {
+        const nowSaved = toggleStoryBookmark(storyId);
+        setSaved(nowSaved);
+        if (nowSaved) addToServer("story", storyId);
+        else removeFromServer("story", storyId);
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label={saved ? "Remove bookmark" : "Bookmark story"}

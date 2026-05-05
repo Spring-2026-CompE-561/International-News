@@ -6,6 +6,8 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { getBookmarkIds, toggleBookmark } from "@/lib/bookmarks";
 import { getStoryBookmarkIds, toggleStoryBookmark } from "@/lib/storyBookmarks";
 import { getReadingHistory, removeFromHistory, clearHistory, type HistoryItem } from "@/lib/readingHistory";
+import { isLoggedIn } from "@/lib/auth";
+import { syncFromServer } from "@/lib/serverBookmarks";
 
 const API_URL = "http://localhost:8000/api/v1";
 type Tab = "saved" | "history";
@@ -73,6 +75,13 @@ function BookmarksContent() {
     setArticles(ar.filter((r) => r.status === "fulfilled" && r.value).map((r) => (r as PromiseFulfilledResult<Article>).value));
     setStories(sr.filter((r) => r.status === "fulfilled" && r.value).map((r) => (r as PromiseFulfilledResult<Story>).value));
     setLoading(false);
+  }, []);
+
+  // Background server sync — runs after page is already rendered from localStorage,
+  // only merges if server has MORE bookmarks than local (never clears local-only ones).
+  useEffect(() => {
+    if (!isLoggedIn()) return;
+    syncFromServer().catch(() => {});
   }, []);
 
   useEffect(() => {

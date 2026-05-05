@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { isBookmarked, toggleBookmark } from "@/lib/bookmarks";
+import { addToServer, removeFromServer } from "@/lib/serverBookmarks";
 
 export function BookmarkButton({ articleId }: { articleId: number }) {
   const [saved, setSaved] = useState(false);
@@ -20,7 +21,10 @@ export function BookmarkButton({ articleId }: { articleId: number }) {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        setSaved(toggleBookmark(articleId));
+        const nowSaved = toggleBookmark(articleId);
+        setSaved(nowSaved);
+        if (nowSaved) addToServer("article", articleId);
+        else removeFromServer("article", articleId);
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
