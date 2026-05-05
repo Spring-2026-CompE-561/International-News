@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, DM_Serif_Display, Inter } from "next/font/google";
 import "./globals.css";
 import {Navbar} from "@/components/navbar";
 import { TopicBar } from "@/components/TopicBar";
+import { Providers } from "@/components/Providers";
 
 
 const geistSans = Geist({
@@ -39,12 +40,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${dmSerif.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <Navbar />
-        <TopicBar />
-        {children}
+      <body suppressHydrationWarning className="min-h-full flex flex-col">
+        <Providers>
+          <Navbar />
+          <TopicBar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

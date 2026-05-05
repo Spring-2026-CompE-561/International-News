@@ -3,8 +3,8 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import { getBookmarks, toggleBookmark } from "@/lib/bookmarks";
-import { getStoryBookmarks, toggleStoryBookmark } from "@/lib/storyBookmarks";
+import { getBookmarks, toggleBookmark, type ArticleBookmark } from "@/lib/bookmarks";
+import { getStoryBookmarks, toggleStoryBookmark, type StoryBookmark } from "@/lib/storyBookmarks";
 import { getReadingHistory, removeFromHistory, clearHistory, type HistoryItem } from "@/lib/readingHistory";
 
 type Tab = "saved" | "history";
@@ -24,10 +24,18 @@ function BookmarksContent() {
   const router = useRouter();
   const activeTab: Tab = searchParams.get("tab") === "history" ? "history" : "saved";
 
-  const [, setTick] = useState(0);
-  const refresh = useCallback(() => setTick((n) => n + 1), []);
+  const [articles, setArticles] = useState<ArticleBookmark[]>([]);
+  const [stories, setStories] = useState<StoryBookmark[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  const refresh = useCallback(() => {
+    setArticles(getBookmarks());
+    setStories(getStoryBookmarks());
+    setHistory(getReadingHistory());
+  }, []);
 
   useEffect(() => {
+    refresh();
     window.addEventListener("bookmarks-changed", refresh);
     window.addEventListener("story-bookmarks-changed", refresh);
     window.addEventListener("history-changed", refresh);
@@ -38,9 +46,6 @@ function BookmarksContent() {
     };
   }, [refresh]);
 
-  const articles = getBookmarks();
-  const stories = getStoryBookmarks();
-  const history = getReadingHistory();
   const savedTotal = articles.length + stories.length;
 
   const setTab = (tab: Tab) => router.push(`/bookmarks?tab=${tab}`);
