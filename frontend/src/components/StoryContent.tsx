@@ -111,20 +111,20 @@ function hasBriefingContent(story: Story): boolean {
 function LoadingPulse() {
   return (
     <div className="space-y-8 animate-pulse">
-      <div className="bg-[#FFFBEB] dark:bg-[#F59E0B]/10 rounded-2xl p-6 sm:p-8 border border-[#F59E0B]/20">
-        <div className="h-3 w-24 bg-[#F59E0B]/30 rounded mb-4" />
+      <div className="bg-[#FFFBEB] dark:bg-horizon/10 rounded-2xl p-6 sm:p-8 border border-horizon/20">
+        <div className="h-3 w-24 bg-horizon/30 rounded mb-4" />
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#F59E0B]/20" />
+              <div className="w-6 h-6 rounded-full bg-horizon/20" />
               <div className="flex-1 h-4 bg-gray-200 dark:bg-white/10 rounded" />
             </div>
           ))}
         </div>
       </div>
       <div>
-        <div className="h-3 w-20 bg-[#F59E0B]/30 rounded mb-2" />
-        <div className="w-12 h-0.5 bg-[#F59E0B]/20 mb-6" />
+        <div className="h-3 w-20 bg-horizon/30 rounded mb-2" />
+        <div className="w-12 h-0.5 bg-horizon/20 mb-6" />
         <div className="space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="h-4 bg-gray-200 dark:bg-white/10 rounded" style={{ width: `${90 - i * 5}%` }} />
@@ -187,7 +187,7 @@ export function StoryContent({
     <>
       {/* Hook */}
       {story.hook && (
-        <p className="text-xl sm:text-2xl font-serif text-[#0F172A] dark:text-white leading-relaxed mb-10 border-l-4 border-[#F59E0B] pl-6">
+        <p className="text-xl sm:text-2xl font-serif text-[#183153] dark:text-white leading-relaxed mb-10 border-l-4 border-horizon pl-6">
           {story.hook.replace(/^===.*?===\s*/g, "")}
         </p>
       )}
@@ -198,14 +198,14 @@ export function StoryContent({
         <>
           {/* The Situation */}
           {story.quick_brief && story.quick_brief.length > 0 && (
-            <section id="situation" className="mb-10 bg-[#FFFBEB] dark:bg-[#F59E0B]/10 rounded-2xl p-6 sm:p-8 border border-[#F59E0B]/20 scroll-mt-16">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
+            <section id="situation" className="mb-10 bg-[#FFFBEB] dark:bg-horizon/10 rounded-2xl p-6 sm:p-8 border border-horizon/20 scroll-mt-16">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-4">
                 Story Overview
               </h2>
               <ul className="space-y-3">
                 {story.quick_brief.map((bullet, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#F59E0B] text-white text-xs font-bold flex items-center justify-center mt-0.5">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-horizon text-white text-xs font-bold flex items-center justify-center mt-0.5">
                       {i + 1}
                     </span>
                     <span className="text-[16px] leading-relaxed text-gray-800 dark:text-white/80">
@@ -220,10 +220,10 @@ export function StoryContent({
           {/* The Story — main readable narrative */}
           {story.full_briefing && (
             <section id="story" className="mb-12 scroll-mt-16">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-1">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-1">
                 Full Story
               </h2>
-              <div className="w-12 h-0.5 bg-[#F59E0B] mb-6" />
+              <div className="w-12 h-0.5 bg-horizon mb-6" />
               {story.full_briefing.body.split("\n\n").map((p, i) => (
                 <p
                   key={i}
@@ -240,16 +240,16 @@ export function StoryContent({
           {/* Source Intelligence */}
           {story.source_notes && story.source_notes.length > 0 && (
             <section className="mb-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">Source Intelligence</h2>
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-4">Source Intelligence</h2>
               <div className="space-y-3">
                 {story.source_notes.map((note, i) => (
                   <div key={i} className="flex items-start gap-4 rounded-xl border border-gray-200 dark:border-white/10 p-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#F59E0B]/10 flex items-center justify-center">
-                      <Newspaper className="w-5 h-5 text-[#F59E0B]" />
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-horizon/10 flex items-center justify-center">
+                      <Newspaper className="w-5 h-5 text-horizon" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-bold text-[#0F172A] dark:text-white">{note.source}</span>
+                        <span className="text-sm font-bold text-[#183153] dark:text-white">{note.source}</span>
                         {note.country && (
                           <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-white/40">{note.country}</span>
                         )}
@@ -280,15 +280,15 @@ export function StoryContent({
           {/* Legacy fallback */}
           {story.what_happened && (
             <section className="mb-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">What Happened</h2>
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-4">What Happened</h2>
               {story.what_happened.split("\n\n").map((p, i) => (
                 <p key={i} className="text-[17px] leading-[1.8] text-gray-800 dark:text-white/75 mb-4">{p}</p>
               ))}
             </section>
           )}
           {story.why_it_matters && (
-            <section className="mb-10 bg-gray-50 dark:bg-white/[0.03] rounded-2xl p-6 sm:p-8 border border-gray-200 dark:border-white/10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">Why It Matters</h2>
+            <section className="mb-10 bg-gray-50 dark:bg-[#3D3D3D] rounded-2xl p-6 sm:p-8 border border-gray-200 dark:border-white/10">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-4">Why It Matters</h2>
               {story.why_it_matters.split("\n\n").map((p, i) => (
                 <p key={i} className="text-[17px] leading-[1.8] text-gray-800 dark:text-white/75 mb-4">{p}</p>
               ))}
@@ -296,7 +296,7 @@ export function StoryContent({
           )}
           {story.timeline && (
             <section className="mb-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">Timeline</h2>
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-4">Timeline</h2>
               <div className="space-y-3 border-l-2 border-gray-200 dark:border-white/10 pl-6">
                 {story.timeline.split("\n").map((line, i) => {
                   const cleaned = line.replace(/^[-•]\s*/, "").trim();
@@ -304,10 +304,10 @@ export function StoryContent({
                   const parts = cleaned.split(" — ");
                   return (
                     <div key={i} className="relative">
-                      <div className="absolute -left-[29px] top-1.5 w-3 h-3 rounded-full bg-[#F59E0B]" />
+                      <div className="absolute -left-[29px] top-1.5 w-3 h-3 rounded-full bg-horizon" />
                       {parts.length >= 2 ? (
                         <>
-                          <span className="text-sm font-bold text-[#0F172A] dark:text-white">{parts[0]}</span>
+                          <span className="text-sm font-bold text-[#183153] dark:text-white">{parts[0]}</span>
                           <span className="text-sm text-gray-600 dark:text-white/60"> — {parts.slice(1).join(" — ")}</span>
                         </>
                       ) : (
@@ -320,8 +320,8 @@ export function StoryContent({
             </section>
           )}
           {story.global_perspective && (
-            <section className="mb-10 bg-[#0F172A] dark:bg-white/[0.05] rounded-2xl p-6 sm:p-8">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">Global Perspective</h2>
+            <section className="mb-10 bg-[#183153] dark:bg-white/[0.05] rounded-2xl p-6 sm:p-8">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-4">Global Perspective</h2>
               {story.global_perspective.split("\n\n").map((p, i) => (
                 <p key={i} className="text-[16px] leading-[1.8] text-white/80 mb-4">{p}</p>
               ))}
@@ -333,7 +333,7 @@ export function StoryContent({
       {/* Source Articles (always shown) */}
       {sourceArticles.length > 0 && (
         <section id="sources" className="mb-10 scroll-mt-16">
-          <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
+          <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-4">
             Original Sources ({sourceArticles.length})
           </h2>
           <div className="space-y-3">
@@ -343,14 +343,14 @@ export function StoryContent({
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block rounded-xl border border-gray-200 dark:border-white/10 p-4 hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors group"
+                className="block rounded-xl border border-gray-200 dark:border-white/10 p-4 hover:bg-horizon/[0.07] transition-colors group"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#F59E0B]">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-horizon">
                       {article.source?.name}
                     </span>
-                    <h3 className="text-[15px] font-medium text-[#0F172A] dark:text-white mt-1 group-hover:text-[#F59E0B] transition-colors line-clamp-2">
+                    <h3 className="text-[15px] font-medium text-[#183153] dark:text-white mt-1 group-hover:text-horizon transition-colors line-clamp-2">
                       {article.title}
                     </h3>
                   </div>

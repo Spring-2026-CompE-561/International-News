@@ -152,7 +152,7 @@ export default async function TopicPage({
     return (
       <div className="max-w-7xl mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold text-white">Topic not found</h1>
-        <Link href="/" className="text-[#F59E0B] mt-4 inline-block">
+        <Link href="/" className="text-horizon mt-4 inline-block">
           Back to home
         </Link>
       </div>
@@ -205,7 +205,7 @@ export default async function TopicPage({
           {/* Hero content */}
           <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 lg:p-14">
             <div className="max-w-3xl">
-              <span className="inline-block text-[11px] font-bold uppercase tracking-[0.25em] text-[#F59E0B] mb-3">
+              <span className="inline-block text-[11px] font-bold uppercase tracking-[0.25em] text-horizon mb-3">
                 #1 in {topic.name}
               </span>
 
@@ -241,7 +241,7 @@ export default async function TopicPage({
               <div className="flex items-center gap-3">
                 <Link
                   href={`/story/${hero.id}`}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black text-sm font-bold hover:bg-[#F59E0B] transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black text-sm font-bold hover:bg-horizon transition-colors"
                 >
                   Read Full Story
                 </Link>
@@ -272,15 +272,15 @@ export default async function TopicPage({
                 href={`/story/${story.id}`}
                 className="group shrink-0 w-[380px] sm:w-[420px]"
               >
-                <div className="flex items-start gap-4 p-5 rounded-xl border border-white/[0.06] hover:border-[#F59E0B]/20 hover:bg-white/[0.03] transition-all duration-300">
+                <div className="flex items-start gap-4 p-5 rounded-xl border border-white/[0.06] hover:border-horizon/20 hover:bg-white/[0.03] transition-all duration-300">
                   {/* Rank */}
-                  <span className="font-serif text-6xl font-black italic text-white/[0.08] group-hover:text-[#F59E0B]/15 transition-colors shrink-0 w-12 leading-none">
+                  <span className="font-serif text-6xl font-black italic text-white/[0.08] group-hover:text-horizon/15 transition-colors shrink-0 w-12 leading-none">
                     {i + 2}
                   </span>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-serif text-lg font-bold text-white group-hover:text-[#F59E0B] transition-colors leading-snug">
+                    <h3 className="font-serif text-lg font-bold text-white group-hover:text-horizon transition-colors leading-snug">
                       {story.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-2 text-[11px] text-white/30">

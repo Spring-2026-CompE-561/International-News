@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { setToken, isLoggedIn } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,9 +16,7 @@ export default function LoginPage() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      setLoggedIn(true);
-    }
+    if (isLoggedIn()) setLoggedIn(true);
   }, []);
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
@@ -39,7 +38,7 @@ export default function LoginPage() {
 
     if (res.ok) {
       const data = await res.json();
-      localStorage.setItem("token", data.access_token);
+      setToken(data.access_token);
       router.push("/");
     } else {
       setError("Invalid email or password");
