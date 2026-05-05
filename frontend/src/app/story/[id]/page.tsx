@@ -167,7 +167,7 @@ export default async function StoryPage({
               <Clock className="w-4 h-4" />
               <span>{timeAgo(story.updated_at)}</span>
             </div>
-            <StoryBookmarkButton story={{ id: story.id, title: story.title, image_url: story.image_url, category: story.category, source_count: story.source_count, country_count: story.country_count, created_at: story.created_at }} />
+            <StoryBookmarkButton storyId={story.id} />
           </div>
         </div>
       </div>

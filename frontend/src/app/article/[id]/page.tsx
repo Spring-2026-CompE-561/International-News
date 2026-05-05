@@ -173,7 +173,7 @@ export default async function ArticlePage({
               <span>{article.region.name}</span>
             </>
           )}
-          <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+          <InlineBookmarkButton articleId={article.id} />
         </div>
 
         {/* Summary — lead paragraph */}
@@ -230,7 +230,7 @@ export default async function ArticlePage({
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+              <InlineBookmarkButton articleId={article.id} />
               <a
                 href={article.url}
                 target="_blank"

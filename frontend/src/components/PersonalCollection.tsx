@@ -2,14 +2,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Clock, Sparkles } from "lucide-react";
-import { getBookmarks } from "@/lib/bookmarks";
-import { getStoryBookmarks } from "@/lib/storyBookmarks";
+import { getBookmarkIds } from "@/lib/bookmarks";
+import { getStoryBookmarkIds } from "@/lib/storyBookmarks";
 import { getReadingHistory } from "@/lib/readingHistory";
-
-interface HubGroup {
-  name: string;
-  count: number;
-}
 
 function StatCard({
   icon,
@@ -45,36 +40,15 @@ function StatCard({
   );
 }
 
-function buildHubGroups(): HubGroup[] {
-  const groups: Record<string, number> = {};
-  for (const b of getBookmarks()) {
-    const name = b.topic || "General";
-    groups[name] = (groups[name] || 0) + 1;
-  }
-  for (const b of getStoryBookmarks()) {
-    const name = b.category || "General";
-    groups[name] = (groups[name] || 0) + 1;
-  }
-  return Object.entries(groups)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([name, count]) => ({ name, count }));
-}
-
 export function PersonalCollection() {
   const [savedCount, setSavedCount] = useState(0);
   const [historyCount, setHistoryCount] = useState(0);
-  const [hubGroups, setHubGroups] = useState<HubGroup[]>([]);
 
   useEffect(() => {
     function refresh() {
-      const articles = getBookmarks();
-      const stories = getStoryBookmarks();
-      setSavedCount(articles.length + stories.length);
+      setSavedCount(getBookmarkIds().length + getStoryBookmarkIds().length);
       setHistoryCount(getReadingHistory().length);
-      setHubGroups(buildHubGroups());
     }
-
     refresh();
     window.addEventListener("bookmarks-changed", refresh);
     window.addEventListener("story-bookmarks-changed", refresh);
@@ -105,61 +79,28 @@ export function PersonalCollection() {
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="grid grid-cols-3 gap-3 flex-1">
-            <StatCard
-              href="/bookmarks?tab=saved"
-              icon={<img src="/bookmark-hover.svg" alt="" className="w-4 h-4" />}
-              label="Saved"
-              value={savedCount}
-              description="Bookmarked pieces waiting in your hub."
-            />
-            <StatCard
-              href="/bookmarks?tab=history"
-              icon={<Clock className="w-4 h-4" />}
-              label="Reading Queue"
-              value={historyCount}
-              description="Articles and stories you've opened."
-            />
-            <StatCard
-              href="/bookmarks?tab=saved"
-              icon={<Sparkles className="w-4 h-4" />}
-              label="Following"
-              value={0}
-              description="Ongoing themes building your personal news graph."
-            />
-          </div>
-
-          {hubGroups.length > 0 && (
-            <div className="lg:w-64 xl:w-72 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-4 shrink-0">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-white/30">
-                  In Your Hub
-                </span>
-                <Link
-                  href="/bookmarks?tab=saved"
-                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors"
-                >
-                  Open All ↗
-                </Link>
-              </div>
-              <div className="space-y-0">
-                {hubGroups.map((group) => (
-                  <div
-                    key={group.name}
-                    className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-white/[0.06] last:border-0"
-                  >
-                    <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">
-                      {group.name}
-                    </span>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-gray-400 dark:text-white/30">
-                      {group.count} saved
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+        <div className="grid grid-cols-3 gap-3">
+          <StatCard
+            href="/bookmarks?tab=saved"
+            icon={<img src="/bookmark-hover.svg" alt="" className="w-4 h-4" />}
+            label="Saved"
+            value={savedCount}
+            description="Bookmarked pieces waiting in your hub."
+          />
+          <StatCard
+            href="/bookmarks?tab=history"
+            icon={<Clock className="w-4 h-4" />}
+            label="Reading Queue"
+            value={historyCount}
+            description="Articles and stories you've opened."
+          />
+          <StatCard
+            href="/bookmarks?tab=saved"
+            icon={<Sparkles className="w-4 h-4" />}
+            label="Following"
+            value={0}
+            description="Ongoing themes building your personal news graph."
+          />
         </div>
       </div>
       <hr className="border-gray-200 dark:border-white/10" />

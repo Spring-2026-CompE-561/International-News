@@ -186,7 +186,7 @@ export default async function Home() {
                           {article.source.name}
                         </div>
                       )}
-                      <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+                      <BookmarkButton articleId={article.id} />
                     </div>
 
                     <h3 className="text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] font-semibold tracking-[-0.03em] leading-snug text-[#0F172A] dark:text-white group-hover:text-[#0F172A]/80 dark:group-hover:text-white/90 transition-colors">

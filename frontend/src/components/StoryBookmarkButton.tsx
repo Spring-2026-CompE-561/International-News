@@ -1,23 +1,23 @@
 "use client";
 import { useState, useEffect } from "react";
-import { isStoryBookmarked, toggleStoryBookmark, type StoryBookmark } from "@/lib/storyBookmarks";
+import { isStoryBookmarked, toggleStoryBookmark } from "@/lib/storyBookmarks";
 
-export function StoryBookmarkButton({ story }: { story: StoryBookmark }) {
+export function StoryBookmarkButton({ storyId }: { storyId: number }) {
   const [saved, setSaved] = useState(false);
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    setSaved(isStoryBookmarked(story.id));
-    const handler = () => setSaved(isStoryBookmarked(story.id));
+    setSaved(isStoryBookmarked(storyId));
+    const handler = () => setSaved(isStoryBookmarked(storyId));
     window.addEventListener("story-bookmarks-changed", handler);
     return () => window.removeEventListener("story-bookmarks-changed", handler);
-  }, [story.id]);
+  }, [storyId]);
 
   const icon = saved || hovered ? "/bookmark-hover.svg" : "/small-bookmark.svg";
 
   return (
     <button
-      onClick={() => setSaved(toggleStoryBookmark(story))}
+      onClick={() => setSaved(toggleStoryBookmark(storyId))}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label={saved ? "Remove bookmark" : "Bookmark story"}

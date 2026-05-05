@@ -9,6 +9,10 @@ export function getBookmarkIds(): number[] {
   }
 }
 
+export function isBookmarked(id: number): boolean {
+  return getBookmarkIds().includes(id);
+}
+
 export function toggleBookmark(articleId: number): boolean {
   const ids = getBookmarkIds();
   const index = ids.indexOf(articleId);

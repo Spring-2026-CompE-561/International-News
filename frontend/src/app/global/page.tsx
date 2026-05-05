@@ -110,7 +110,7 @@ export default async function GlobalPage() {
                       </>
                     )}
                   </div>
-                  <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+                  <BookmarkButton articleId={article.id} />
                 </div>
 
                 <h3 className="text-[1.1rem] sm:text-[1.3rem] lg:text-[1.5rem] font-semibold tracking-[-0.04em] leading-[1.05] text-[#0F172A] dark:text-white group-hover:text-[#0F172A]/80 dark:group-hover:text-white/90 transition-colors">
@@ -139,7 +139,7 @@ export default async function GlobalPage() {
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+                  <BookmarkButton articleId={article.id} />
                 </div>
               )}
               <div className="flex-1 min-w-0">
