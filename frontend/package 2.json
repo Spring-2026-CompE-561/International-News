@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:all": "concurrently -n FE,BE -c cyan,yellow --kill-others \"next dev\" \"cd ../backend && PYTHONPATH=src uv run uvicorn app.main:app --reload\"",
-    "types:sync": "openapi-typescript http://localhost:8000/openapi.json -o src/types/api.generated.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -35,8 +33,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
-    "concurrently": "^9.2.1",
-    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "tailwindcss": "^4",

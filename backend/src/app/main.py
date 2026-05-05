@@ -15,7 +15,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Create database tables if they don't exist
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    logger.warning("Could not connect to database at startup: %s", e)
 
 app = FastAPI(
     title=settings.app_name,

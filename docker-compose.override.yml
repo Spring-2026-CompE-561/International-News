@@ -10,7 +10,7 @@ services:
       - ./backend/src:/app/src   # live reload on Python changes
 
   frontend:
-    command: npm run dev
+    command: npx next dev
     environment:
       NODE_ENV: development
       BACKEND_URL: http://backend:8000
@@ -19,5 +19,8 @@ services:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
+      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
+      - ./frontend/next.config.ts:/app/next.config.ts:ro
+      - ./frontend/postcss.config.mjs:/app/postcss.config.mjs:ro
       - /app/node_modules          # keep container's node_modules, don't overwrite with host
       - /app/.next                 # keep container's build cache
