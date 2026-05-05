@@ -19,7 +19,7 @@ export function TopicBar() {
   const pathname = usePathname();
 
   return (
-    <div className="bg-[#0F172A] dark:bg-[#0F172A] border-b border-white/10">
+    <div className="bg-[#0F172A] dark:bg-[#F59E0B] border-b border-white/10 dark:border-amber-600/30 transition-colors">
       <div className="container px-8 overflow-x-auto">
         <div className="flex items-end gap-0">
           {topics.map((topic) => {
@@ -34,8 +34,8 @@ export function TopicBar() {
                 className={cn(
                   "px-5 py-3 text-sm font-bold whitespace-nowrap transition-colors border-b-2",
                   isActive
-                    ? "text-white border-[#F59E0B]"
-                    : "text-white/60 border-transparent hover:text-white"
+                    ? "text-white dark:text-[#0F172A] border-[#F59E0B] dark:border-[#0F172A]"
+                    : "text-white/60 dark:text-[#0F172A]/60 border-transparent hover:text-white dark:hover:text-[#0F172A]"
                 )}
               >
                 {topic.label}

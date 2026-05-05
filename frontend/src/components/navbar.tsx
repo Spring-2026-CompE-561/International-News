@@ -3,7 +3,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import UserButton from "@/components/UserButton";
 import Logo, { LogoMobile } from "@/components/Logo";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogIn, Menu, UserRoundPlus } from "lucide-react";
@@ -63,16 +63,22 @@ function DesktopNavbar() {
 					<Link
 						href="/signin"
 						aria-label="Sign in"
-						className={buttonVariants({ variant: "ghost", size: "icon" })}
+						className="group inline-flex items-center h-8 px-2 rounded-lg text-sm font-medium hover:bg-muted hover:text-foreground transition-colors overflow-hidden"
 					>
-						<LogIn />
+						<LogIn className="size-4 shrink-0" />
+						<span className="max-w-0 overflow-hidden whitespace-nowrap pl-0 opacity-0 group-hover:max-w-[50px] group-hover:pl-1.5 group-hover:opacity-100 transition-all duration-200">
+							Sign In
+						</span>
 					</Link>
 					<Link
 						href="/signup"
 						aria-label="Sign up"
-						className={buttonVariants({ variant: "ghost", size: "icon" })}
+						className="group inline-flex items-center h-8 px-2 rounded-lg text-sm font-medium hover:bg-muted hover:text-foreground transition-colors overflow-hidden"
 					>
-						<UserRoundPlus />
+						<UserRoundPlus className="size-4 shrink-0" />
+						<span className="max-w-0 overflow-hidden whitespace-nowrap pl-0 opacity-0 group-hover:max-w-[55px] group-hover:pl-1.5 group-hover:opacity-100 transition-all duration-200">
+							Sign Up
+						</span>
 					</Link>
 					<NavBookmarkIcon />
 					<ModeToggle />
