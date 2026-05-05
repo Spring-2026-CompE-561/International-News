@@ -21,7 +21,7 @@ interface Article {
 
 async function getArticle(id: string): Promise<Article | null> {
   try {
-    const res = await fetch(`${API_URL}/articles/${id}`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/articles/${id}`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
     return await res.json();
   } catch {

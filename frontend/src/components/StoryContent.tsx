@@ -9,6 +9,19 @@ import {
 
 const API_URL = "http://localhost:8000/api/v1";
 
+const LABEL_TO_CODE: Record<string, string> = {
+  "united states": "US", "united kingdom": "GB", "france": "FR",
+  "germany": "DE", "australia": "AU", "canada": "CA", "india": "IN",
+  "japan": "JP", "brazil": "BR", "south africa": "ZA", "uae": "AE",
+  "united arab emirates": "AE", "china": "CN", "russia": "RU",
+  "israel": "IL", "mexico": "MX", "iran": "IR", "ukraine": "UA",
+  "taiwan": "TW", "south korea": "KR", "italy": "IT", "spain": "ES",
+  "turkey": "TR", "saudi arabia": "SA", "egypt": "EG", "nigeria": "NG",
+  "pakistan": "PK", "indonesia": "ID", "netherlands": "NL",
+  "sweden": "SE", "switzerland": "CH", "poland": "PL", "argentina": "AR",
+  "europe": "EU", "european union": "EU",
+};
+
 interface AngleItem {
   label: string;
   angle?: string;
@@ -187,7 +200,7 @@ export function StoryContent({
           {story.quick_brief && story.quick_brief.length > 0 && (
             <section id="situation" className="mb-10 bg-[#FFFBEB] dark:bg-[#F59E0B]/10 rounded-2xl p-6 sm:p-8 border border-[#F59E0B]/20 scroll-mt-16">
               <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
-                The Situation
+                Story Overview
               </h2>
               <ul className="space-y-3">
                 {story.quick_brief.map((bullet, i) => (
@@ -221,86 +234,6 @@ export function StoryContent({
                   {p}
                 </p>
               ))}
-            </section>
-          )}
-
-          {/* What Changed */}
-          {story.what_changed && (
-            <section className="mb-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
-                {story.what_changed.heading || "What Changed"}
-              </h2>
-              {story.what_changed.body.split("\n\n").map((p, i) => (
-                <p key={i} className="text-[17px] leading-[1.8] text-gray-800 dark:text-white/75 mb-4">
-                  {p}
-                </p>
-              ))}
-            </section>
-          )}
-
-          {/* Why This Matters */}
-          {story.big_picture && (
-            <section className="mb-10 bg-gray-50 dark:bg-white/[0.03] rounded-2xl p-6 sm:p-8 border border-gray-200 dark:border-white/10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
-                {story.big_picture.heading || "Why This Matters"}
-              </h2>
-              {story.big_picture.body.split("\n\n").map((p, i) => (
-                <p key={i} className="text-[17px] leading-[1.8] text-gray-800 dark:text-white/75 mb-4">
-                  {p}
-                </p>
-              ))}
-            </section>
-          )}
-
-          {/* The Angles */}
-          {story.angles && story.angles.length > 0 && (
-            <section id="angles" className="mb-10 scroll-mt-16">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">
-                The Angles
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {story.angles.map((angle, i) => (
-                  <div key={i} className="rounded-xl border border-gray-200 dark:border-white/10 p-5 bg-white dark:bg-white/[0.02] hover:border-[#F59E0B]/30 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Globe className="w-4 h-4 text-[#F59E0B] flex-shrink-0" />
-                      <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">{angle.label}</h3>
-                      {angle.type && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#F59E0B]/10 text-[#F59E0B]">
-                          {angle.type}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[15px] leading-relaxed text-gray-600 dark:text-white/60 mb-3">
-                      {angle.summary || angle.angle}
-                    </p>
-                    {angle.source_names && angle.source_names.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {angle.source_names.map((src, j) => (
-                          <span key={j} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-white/40">
-                            {src}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Timeline */}
-          {story.timeline_json && story.timeline_json.length > 0 && (
-            <section className="mb-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-4">Timeline</h2>
-              <div className="space-y-4 border-l-2 border-[#F59E0B]/30 pl-6">
-                {story.timeline_json.map((item, i) => (
-                  <div key={i} className="relative">
-                    <div className="absolute -left-[29px] top-1 w-3 h-3 rounded-full bg-[#F59E0B]" />
-                    <span className="text-sm font-bold text-[#0F172A] dark:text-white block">{item.label || item.date}</span>
-                    <span className="text-[15px] text-gray-600 dark:text-white/60 leading-relaxed">{item.event}</span>
-                  </div>
-                ))}
-              </div>
             </section>
           )}
 
