@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Text
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
@@ -14,7 +14,15 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Deletes bookmarks if user is deleted
+    # Profile fields (nullable for existing users)
+    display_name = Column(String(100), nullable=True)
+    bio = Column(Text, nullable=True)
+    country = Column(String(100), nullable=True)
+    city = Column(String(100), nullable=True)
+
     bookmarks = relationship(
         "Bookmark", back_populates="user", cascade="all, delete-orphan"
+    )
+    comments = relationship(
+        "Comment", back_populates="user", cascade="all, delete-orphan"
     )
