@@ -188,7 +188,7 @@ export default async function StoryPage({
 
       {/* World Perspectives — horizontal scroll under hero */}
       {story.angles && story.angles.length > 0 && (
-        <section id="angles" className="bg-[#0e1f33] scroll-mt-16">
+        <section id="angles" className="bg-black scroll-mt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <div className="flex items-center gap-3 mb-4">
               <Globe className="w-5 h-5 text-horizon" />
@@ -205,7 +205,7 @@ export default async function StoryPage({
                 const code = LABEL_TO_CODE[angle.label.toLowerCase().trim()];
                 return (
                   <div key={i} className="group shrink-0 w-[280px] sm:w-[300px]">
-                    <div className="relative rounded-xl overflow-hidden bg-[#183153] border border-white/[0.1] p-5 h-full">
+                    <div className="relative rounded-xl overflow-hidden bg-[#0F172A] border border-white/[0.1] p-5 h-full">
                       <div className="flex items-center gap-3 mb-3">
                         {code ? (
                           <img
