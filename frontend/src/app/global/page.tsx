@@ -52,11 +52,11 @@ export default async function GlobalPage() {
   const rest = articles.slice(2);
 
   return (
-    <main className="flex-1 bg-white dark:bg-[#0a0a0a]">
+    <main className="flex-1 bg-[#F0F0EE] dark:bg-[#1E1E1E]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-[#F59E0B] transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-horizon transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -64,7 +64,7 @@ export default async function GlobalPage() {
 
         <div className="flex items-start justify-between gap-3 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-[1.8rem] sm:text-[2.2rem] lg:text-[2.6rem] font-semibold tracking-[-0.04em] text-[#0F172A] dark:text-white leading-none">
+            <h1 className="text-[1.8rem] sm:text-[2.2rem] lg:text-[2.6rem] font-semibold tracking-[-0.04em] text-[#183153] dark:text-white leading-none">
               Global Top News
             </h1>
             <p className="mt-2 text-[14px] sm:text-[15px] text-gray-500 dark:text-white/50">
@@ -85,7 +85,7 @@ export default async function GlobalPage() {
                 href={`/article/${article.id}`}
                 className="group cursor-pointer"
               >
-                <div className="relative overflow-hidden bg-gray-200 dark:bg-[#2a2a2a] aspect-[16/10] mb-3 sm:mb-4 rounded-[14px]">
+                <div className="relative overflow-hidden bg-gray-200 dark:bg-[#3D3D3D] aspect-[16/10] mb-3 sm:mb-4 rounded-[14px] group-hover:ring-2 group-hover:ring-horizon transition-all">
                   {article.image_url && (
                     <img
                       src={article.image_url}
@@ -113,7 +113,7 @@ export default async function GlobalPage() {
                   <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
                 </div>
 
-                <h3 className="text-[1.1rem] sm:text-[1.3rem] lg:text-[1.5rem] font-semibold tracking-[-0.04em] leading-[1.05] text-[#0F172A] dark:text-white group-hover:text-[#0F172A]/80 dark:group-hover:text-white/90 transition-colors">
+                <h3 className="text-[1.1rem] sm:text-[1.3rem] lg:text-[1.5rem] font-semibold tracking-[-0.04em] leading-[1.05] text-[#183153] dark:text-white group-hover:text-horizon transition-colors">
                   {article.title}
                 </h3>
               </a>
@@ -130,10 +130,10 @@ export default async function GlobalPage() {
             <a
               key={article.id}
               href={`/article/${article.id}`}
-              className="group flex gap-4 sm:gap-5 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-white/[0.02] -mx-3 px-3 rounded-lg transition-colors"
+              className="group flex gap-4 sm:gap-5 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-horizon/[0.07] -mx-3 px-3 rounded-lg transition-colors"
             >
               {article.image_url && (
-                <div className="relative w-28 h-20 sm:w-36 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#2a2a2a]">
+                <div className="relative w-28 h-20 sm:w-36 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#3D3D3D]">
                   <img
                     src={article.image_url}
                     alt={article.title}
@@ -144,7 +144,7 @@ export default async function GlobalPage() {
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F59E0B]">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-horizon">
                     {article.topic?.name || "News"}
                   </span>
                   {article.source && (
@@ -156,7 +156,7 @@ export default async function GlobalPage() {
                     </>
                   )}
                 </div>
-                <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#0F172A] dark:text-white group-hover:text-[#F59E0B] transition-colors line-clamp-2">
+                <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#183153] dark:text-white group-hover:text-horizon transition-colors line-clamp-2">
                   {article.title}
                 </h3>
                 <div className="flex items-center gap-2 mt-1.5 text-[11px] text-gray-400 dark:text-white/35">

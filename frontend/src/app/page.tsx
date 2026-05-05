@@ -143,7 +143,7 @@ export default async function Home() {
                   </span>
                   <a
                     href="/global"
-                    className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-white/55 hover:text-[#F59E0B] transition-colors"
+                    className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.14em] text-gray-500 dark:text-white/55 hover:text-horizon transition-colors"
                   >
                     See all →
                   </a>
@@ -165,7 +165,7 @@ export default async function Home() {
                     href={`/article/${article.id}`}
                     className="group cursor-pointer min-w-0"
                   >
-                    <div className="relative overflow-hidden bg-gray-200 dark:bg-[#2a2a2a] aspect-[16/10] mb-2 sm:mb-3 rounded-[10px] sm:rounded-[12px]">
+                    <div className="relative overflow-hidden bg-gray-200 dark:bg-[#3D3D3D] aspect-[16/10] mb-2 sm:mb-3 rounded-[10px] sm:rounded-[12px] group-hover:ring-2 group-hover:ring-horizon transition-all">
                       {article.image_url && (
                         <img
                           src={article.image_url}
@@ -186,10 +186,10 @@ export default async function Home() {
                           {article.source.name}
                         </div>
                       )}
-                      <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+                      <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? undefined, source: article.source?.name ?? undefined, published_at: article.published_at }} />
                     </div>
 
-                    <h3 className="text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] font-semibold tracking-[-0.03em] leading-snug text-[#0F172A] dark:text-white group-hover:text-[#0F172A]/80 dark:group-hover:text-white/90 transition-colors">
+                    <h3 className="text-[0.9rem] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] font-semibold tracking-[-0.03em] leading-snug text-[#183153] dark:text-white group-hover:text-horizon transition-colors">
                       {article.title}
                     </h3>
                   </a>
