@@ -8,7 +8,8 @@ import { getAuthHeaders, isLoggedIn, clearToken } from "@/lib/auth";
 import { getBookmarks, toggleBookmark } from "@/lib/bookmarks";
 import { getStoryBookmarks, toggleStoryBookmark } from "@/lib/storyBookmarks";
 import { getReadingHistory, removeFromHistory, clearHistory, type HistoryItem } from "@/lib/readingHistory";
-import { COUNTRIES, countryCode } from "@/lib/countries";
+import { COUNTRIES as FALLBACK_COUNTRIES, countryCode } from "@/lib/countries";
+import { apiFetch } from "@/lib/client";
 import type { ArticleBookmark } from "@/lib/bookmarks";
 import type { StoryBookmark } from "@/lib/storyBookmarks";
 
@@ -62,6 +63,14 @@ export default function AccountPage() {
   const [articles, setArticles] = useState<ArticleBookmark[]>([]);
   const [stories, setStories] = useState<StoryBookmark[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  // Country list — starts with static fallback, upgrades to live API list
+  const [countryList, setCountryList] = useState(FALLBACK_COUNTRIES);
+  useEffect(() => {
+    apiFetch<{ code: string; name: string }[]>("/countries")
+      .then((data) => setCountryList(data))
+      .catch(() => {});
+  }, []);
 
   // Comments state
   const [comments, setComments] = useState<UserComment[]>([]);
@@ -266,7 +275,7 @@ export default function AccountPage() {
                   className="w-full rounded-lg border border-gray-200 dark:border-white/10 bg-[#F0F0EE] dark:bg-[#1E1E1E] px-3 py-2 text-sm text-[#183153] dark:text-white focus:outline-none focus:border-horizon/60 transition-colors"
                 >
                   <option value="">Not set</option>
-                  {COUNTRIES.map((c) => (
+                  {countryList.map((c) => (
                     <option key={c.code} value={c.name}>{c.name}</option>
                   ))}
                 </select>

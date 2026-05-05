@@ -1,0 +1,21 @@
+services:
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env          # DATABASE_URL, API keys, SECRET_KEY, etc.
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      # Points Next.js server-side fetches and the proxy rewrite at the backend container
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped

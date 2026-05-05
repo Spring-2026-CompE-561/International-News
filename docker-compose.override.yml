@@ -1,0 +1,23 @@
+# Development overrides — applied automatically when you run `docker compose up`.
+# Mounts source files for hot reload in both services.
+# Use `docker compose -f docker-compose.yml up` to skip this file (production mode).
+
+services:
+
+  backend:
+    command: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend/src:/app/src   # live reload on Python changes
+
+  frontend:
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      BACKEND_URL: http://backend:8000
+      # Required for file-watching inside Docker on Windows/Mac
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - /app/node_modules          # keep container's node_modules, don't overwrite with host
+      - /app/.next                 # keep container's build cache

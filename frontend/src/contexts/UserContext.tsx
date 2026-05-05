@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { getToken, clearToken, isLoggedIn } from "@/lib/auth";
-
+import { syncBookmarksFromServer } from "@/lib/bookmarkSync";
 import { API_URL } from "@/lib/api";
 
 export interface UserProfile {
@@ -44,6 +44,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       });
       if (res.ok) {
         setUser(await res.json());
+        syncBookmarksFromServer();
       } else {
         setUser(null);
       }

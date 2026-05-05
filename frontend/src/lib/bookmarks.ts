@@ -1,3 +1,5 @@
+import { apiAddArticleBookmark, apiRemoveArticleBookmark } from "./bookmarkSync";
+
 const STORAGE_KEY = "horizon-bookmarks";
 
 export interface ArticleBookmark {
@@ -29,12 +31,17 @@ export function isBookmarked(articleId: number): boolean {
 export function toggleBookmark(article: ArticleBookmark): boolean {
   const bookmarks = getBookmarks();
   const index = bookmarks.findIndex((b) => b.id === article.id);
-  if (index >= 0) {
-    bookmarks.splice(index, 1);
-  } else {
+  const adding = index < 0;
+
+  if (adding) {
     bookmarks.push(article);
+    apiAddArticleBookmark(article.id);
+  } else {
+    bookmarks.splice(index, 1);
+    apiRemoveArticleBookmark(article.id);
   }
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
   window.dispatchEvent(new Event("bookmarks-changed"));
-  return index < 0;
+  return adding;
 }
