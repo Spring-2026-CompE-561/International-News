@@ -20,7 +20,7 @@ export function ModeToggle() {
 				<Button
 					variant="ghost"
 					size="icon"
-					className="group w-auto px-2"
+					className="group w-auto px-2 text-white/70 hover:text-white hover:bg-horizon/20"
 				>
 					<span className="relative size-[1.1rem] shrink-0">
 						<Sun className="absolute inset-0 size-full rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

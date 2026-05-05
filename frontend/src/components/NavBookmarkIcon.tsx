@@ -23,12 +23,12 @@ export function NavBookmarkIcon() {
     <Link
       href="/bookmarks"
       aria-label="Bookmarks"
-      className="group inline-flex items-center h-8 px-2 rounded-lg hover:bg-muted transition-colors overflow-hidden"
+      className="group inline-flex items-center h-8 px-2 rounded-lg hover:bg-horizon/20 transition-colors overflow-hidden text-white/70 hover:text-white"
     >
       <span className="relative shrink-0">
-        <img src="/bookmark-hover.svg" alt="" className="w-4 h-4 dark:invert" />
+        <img src="/bookmark-hover.svg" alt="" className="w-4 h-4 invert" />
         {count > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-[#F59E0B] text-black text-[9px] font-bold leading-none">
+          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-4 h-4 rounded-full bg-horizon text-black text-[9px] font-bold leading-none">
             {count > 99 ? "99+" : count}
           </span>
         )}

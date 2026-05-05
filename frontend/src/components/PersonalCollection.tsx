@@ -5,6 +5,7 @@ import { Clock, Sparkles } from "lucide-react";
 import { getBookmarks } from "@/lib/bookmarks";
 import { getStoryBookmarks } from "@/lib/storyBookmarks";
 import { getReadingHistory } from "@/lib/readingHistory";
+import { isLoggedIn } from "@/lib/auth";
 
 interface HubGroup {
   name: string;
@@ -27,17 +28,17 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-4 sm:p-5 flex flex-col hover:border-[#F59E0B]/40 hover:bg-[#F59E0B]/[0.02] transition-colors group"
+      className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#3D3D3D] p-4 sm:p-5 flex flex-col hover:border-horizon/40 hover:bg-horizon/[0.02] transition-colors group"
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="w-8 h-8 rounded-full bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B]">
+        <div className="w-8 h-8 rounded-full bg-horizon/10 flex items-center justify-center text-horizon">
           {icon}
         </div>
         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-white/30">
           {label}
         </span>
       </div>
-      <p className="text-3xl font-bold text-[#0F172A] dark:text-white mb-2 group-hover:text-[#F59E0B] transition-colors">
+      <p className="text-3xl font-bold text-[#183153] dark:text-white mb-2 group-hover:text-horizon transition-colors">
         {value}
       </p>
       <p className="text-[12px] text-gray-400 dark:text-white/35 leading-snug mt-auto">{description}</p>
@@ -65,6 +66,14 @@ export function PersonalCollection() {
   const [savedCount, setSavedCount] = useState(0);
   const [historyCount, setHistoryCount] = useState(0);
   const [hubGroups, setHubGroups] = useState<HubGroup[]>([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setLoggedIn(isLoggedIn());
+    const handleAuth = () => setLoggedIn(isLoggedIn());
+    window.addEventListener("auth-changed", handleAuth);
+    return () => window.removeEventListener("auth-changed", handleAuth);
+  }, []);
 
   useEffect(() => {
     function refresh() {
@@ -86,17 +95,17 @@ export function PersonalCollection() {
     };
   }, []);
 
-  if (savedCount === 0 && historyCount === 0) return null;
+  if (!loggedIn && savedCount === 0 && historyCount === 0) return null;
 
   return (
     <>
       <div className="p-6 sm:p-8">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#F59E0B] mb-1.5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-horizon mb-1.5">
               Your Space
             </p>
-            <h2 className="text-2xl sm:text-[1.7rem] font-semibold tracking-[-0.03em] text-[#0F172A] dark:text-white leading-none">
+            <h2 className="text-2xl sm:text-[1.7rem] font-semibold tracking-[-0.03em] text-[#183153] dark:text-white leading-none">
               Personal Collection
             </h2>
           </div>
@@ -131,14 +140,14 @@ export function PersonalCollection() {
           </div>
 
           {hubGroups.length > 0 && (
-            <div className="lg:w-64 xl:w-72 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-4 shrink-0">
+            <div className="lg:w-64 xl:w-72 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#3D3D3D] p-4 shrink-0">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-white/30">
                   In Your Hub
                 </span>
                 <Link
                   href="/bookmarks?tab=saved"
-                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors"
+                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-horizon hover:text-horizon/80 transition-colors"
                 >
                   Open All ↗
                 </Link>
@@ -149,7 +158,7 @@ export function PersonalCollection() {
                     key={group.name}
                     className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-white/[0.06] last:border-0"
                   >
-                    <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">
+                    <span className="text-[14px] font-semibold text-[#183153] dark:text-white">
                       {group.name}
                     </span>
                     <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-gray-400 dark:text-white/30">

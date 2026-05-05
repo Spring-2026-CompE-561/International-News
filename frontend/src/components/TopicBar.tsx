@@ -19,9 +19,9 @@ export function TopicBar() {
   const pathname = usePathname();
 
   return (
-    <div className="bg-[#0F172A] dark:bg-[#F59E0B] border-b border-white/10 dark:border-amber-600/30 transition-colors">
+    <div className="bg-[#122947] dark:bg-[#183153] border-b border-white/10 transition-colors">
       <div className="container px-8 overflow-x-auto">
-        <div className="flex items-end gap-0">
+        <div className="flex items-end justify-center gap-0">
           {topics.map((topic) => {
             const href = topic.slug ? `/topic/${topic.slug}` : "/";
             const isActive = topic.slug
@@ -34,8 +34,8 @@ export function TopicBar() {
                 className={cn(
                   "px-5 py-3 text-sm font-bold whitespace-nowrap transition-colors border-b-2",
                   isActive
-                    ? "text-white dark:text-[#0F172A] border-[#F59E0B] dark:border-[#0F172A]"
-                    : "text-white/60 dark:text-[#0F172A]/60 border-transparent hover:text-white dark:hover:text-[#0F172A]"
+                    ? "text-white border-horizon"
+                    : "text-white/60 border-transparent hover:text-white"
                 )}
               >
                 {topic.label}

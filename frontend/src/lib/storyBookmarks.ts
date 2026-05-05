@@ -2,12 +2,12 @@ const STORAGE_KEY = "horizon-story-bookmarks";
 
 export interface StoryBookmark {
   id: number;
-  title?: string;
-  category?: string;
-  image_url?: string;
-  source_count?: number;
-  country_count?: number;
-  created_at?: string;
+  title?: string | null;
+  category?: string | null;
+  image_url?: string | null;
+  source_count?: number | null;
+  country_count?: number | null;
+  created_at?: string | null;
 }
 
 export function getStoryBookmarks(): StoryBookmark[] {

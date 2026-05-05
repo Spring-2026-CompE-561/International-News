@@ -9,6 +9,7 @@ import {
 import { StoryContent } from "@/components/StoryContent";
 import { StoryBookmarkButton } from "@/components/StoryBookmarkButton";
 import { TrackVisit } from "@/components/TrackVisit";
+import { CommentsSection } from "@/components/CommentsSection";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -113,7 +114,7 @@ export default async function StoryPage({
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold">Story not found</h1>
-        <Link href="/" className="text-[#F59E0B] mt-4 inline-block">
+        <Link href="/" className="text-horizon mt-4 inline-block">
           Back to home
         </Link>
       </div>
@@ -123,7 +124,7 @@ export default async function StoryPage({
   const useBriefing = hasBriefingContent(story);
 
   return (
-    <main className="flex-1 bg-[#FAFAF7] dark:bg-[#0a0a0a] relative">
+    <main className="flex-1 bg-[#F0F0EE] dark:bg-[#1E1E1E] relative">
       <TrackVisit id={story.id} type="story" title={story.title} image_url={story.image_url} category={story.category} />
       {/* Subtle paper texture overlay */}
       <div className="absolute inset-0 opacity-[0.4] dark:opacity-0 pointer-events-none mix-blend-multiply" style={{
@@ -149,7 +150,7 @@ export default async function StoryPage({
             Back
           </Link>
 
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B] mb-2">
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon mb-2">
             {story.category}
           </span>
 
@@ -180,17 +181,17 @@ export default async function StoryPage({
               <Clock className="w-4 h-4" />
               <span>{timeAgo(story.updated_at)}</span>
             </div>
-            <StoryBookmarkButton story={{ id: story.id, title: story.title, image_url: story.image_url, category: story.category, source_count: story.source_count, country_count: story.country_count, created_at: story.created_at }} />
+            <StoryBookmarkButton story={{ id: story.id, title: story.title, image_url: story.image_url ?? undefined, category: story.category ?? undefined, source_count: story.source_count, country_count: story.country_count, created_at: story.created_at }} />
           </div>
         </div>
       </div>
 
       {/* World Perspectives — horizontal scroll under hero */}
       {story.angles && story.angles.length > 0 && (
-        <section id="angles" className="bg-black scroll-mt-16">
+        <section id="angles" className="bg-[#0e1f33] scroll-mt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <div className="flex items-center gap-3 mb-4">
-              <Globe className="w-5 h-5 text-[#F59E0B]" />
+              <Globe className="w-5 h-5 text-horizon" />
               <h2 className="text-[13px] font-bold uppercase tracking-[0.2em] text-white">
                 World Perspectives
               </h2>
@@ -204,7 +205,7 @@ export default async function StoryPage({
                 const code = LABEL_TO_CODE[angle.label.toLowerCase().trim()];
                 return (
                   <div key={i} className="group shrink-0 w-[280px] sm:w-[300px]">
-                    <div className="relative rounded-xl overflow-hidden bg-[#0F172A] border border-white/[0.1] p-5 h-full">
+                    <div className="relative rounded-xl overflow-hidden bg-[#183153] border border-white/[0.1] p-5 h-full">
                       <div className="flex items-center gap-3 mb-3">
                         {code ? (
                           <img
@@ -213,14 +214,14 @@ export default async function StoryPage({
                             className="w-10 h-10 rounded-full object-cover border-2 border-white/20 shadow-lg"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-[#F59E0B]/20 border-2 border-[#F59E0B]/30 flex items-center justify-center">
-                            <Globe className="w-5 h-5 text-[#F59E0B]" />
+                          <div className="w-10 h-10 rounded-full bg-horizon/20 border-2 border-horizon/30 flex items-center justify-center">
+                            <Globe className="w-5 h-5 text-horizon" />
                           </div>
                         )}
                         <div>
                           <h3 className="text-[15px] font-bold text-white">{angle.label}</h3>
                           {angle.type && angle.type !== "country" && (
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-[#F59E0B]">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-horizon">
                               {angle.type}
                             </span>
                           )}
@@ -251,13 +252,13 @@ export default async function StoryPage({
 
       {/* Sticky mini-nav */}
       {useBriefing && (
-        <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10">
+        <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#1E1E1E]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-6 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 dark:text-white/30 overflow-x-auto">
-              {story.quick_brief && <a href="#situation" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Overview</a>}
-              {story.full_briefing && <a href="#story" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Story</a>}
-              {story.angles && story.angles.length > 0 && <a href="#angles" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Perspectives</a>}
-              <a href="#sources" className="hover:text-[#F59E0B] transition-colors whitespace-nowrap">Sources</a>
+              {story.quick_brief && <a href="#situation" className="hover:text-horizon transition-colors whitespace-nowrap">Overview</a>}
+              {story.full_briefing && <a href="#story" className="hover:text-horizon transition-colors whitespace-nowrap">Story</a>}
+              {story.angles && story.angles.length > 0 && <a href="#angles" className="hover:text-horizon transition-colors whitespace-nowrap">Perspectives</a>}
+              <a href="#sources" className="hover:text-horizon transition-colors whitespace-nowrap">Sources</a>
             </nav>
           </div>
         </div>
@@ -266,6 +267,7 @@ export default async function StoryPage({
       {/* Content — client component that polls for updates */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <StoryContent initialStory={story} sourceArticles={sourceArticles} />
+        <CommentsSection storyId={story.id} />
       </div>
     </main>
   );

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink, Clock, Newspaper } from "lucide-react";
 import { InlineBookmarkButton } from "@/components/InlineBookmarkButton";
 import { TrackVisit } from "@/components/TrackVisit";
+import { CommentsSection } from "@/components/CommentsSection";
 
 const API_URL = "http://localhost:8000/api/v1";
 
@@ -66,7 +67,7 @@ export default async function ArticlePage({
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold">Article not found</h1>
-        <Link href="/" className="text-[#F59E0B] mt-4 inline-block">
+        <Link href="/" className="text-horizon mt-4 inline-block">
           Back to home
         </Link>
       </div>
@@ -76,7 +77,7 @@ export default async function ArticlePage({
   const readTime = estimateReadTime(article.body, article.summary);
 
   return (
-    <main className="flex-1 bg-[#FAFAF7] dark:bg-[#0a0a0a] relative">
+    <main className="flex-1 bg-[#F0F0EE] dark:bg-[#1E1E1E] relative">
       <TrackVisit id={article.id} type="article" title={article.title} image_url={article.image_url} category={article.topic?.name ?? null} />
       {/* Subtle paper texture overlay */}
       <div className="absolute inset-0 opacity-[0.4] dark:opacity-0 pointer-events-none mix-blend-multiply" style={{
@@ -103,7 +104,7 @@ export default async function ArticlePage({
 
             <div className="flex items-center gap-3 mb-3">
               {article.topic && (
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B]">
+                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon">
                   {article.topic.name}
                 </span>
               )}
@@ -126,7 +127,7 @@ export default async function ArticlePage({
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
           <Link
             href={article.topic ? `/topic/${article.topic.slug}` : "/"}
-            className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-[#F59E0B] transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-horizon transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -134,7 +135,7 @@ export default async function ArticlePage({
 
           <div className="flex items-center gap-3 mb-3">
             {article.topic && (
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F59E0B]">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-horizon">
                 {article.topic.name}
               </span>
             )}
@@ -148,7 +149,7 @@ export default async function ArticlePage({
             )}
           </div>
 
-          <h1 className="font-serif font-bold leading-[1.1] tracking-[-0.02em] text-3xl sm:text-4xl lg:text-[2.8rem] text-[#0F172A] dark:text-white mb-5">
+          <h1 className="font-serif font-bold leading-[1.1] tracking-[-0.02em] text-3xl sm:text-4xl lg:text-[2.8rem] text-[#183153] dark:text-white mb-5">
             {article.title}
           </h1>
         </div>
@@ -173,12 +174,12 @@ export default async function ArticlePage({
               <span>{article.region.name}</span>
             </>
           )}
-          <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+          <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? undefined, source: article.source?.name ?? undefined, published_at: article.published_at }} />
         </div>
 
         {/* Summary — lead paragraph */}
         {article.summary && (
-          <p className="text-[19px] sm:text-[21px] leading-[1.7] text-[#0F172A] dark:text-white/90 mb-8 font-[family-name:var(--font-inter)]">
+          <p className="text-[19px] sm:text-[21px] leading-[1.7] text-[#183153] dark:text-white/90 mb-8 font-[family-name:var(--font-inter)]">
             {article.summary}
           </p>
         )}
@@ -203,23 +204,23 @@ export default async function ArticlePage({
 
         {/* Divider */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" />
-          <div className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]/50" />
-          <div className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]/25" />
+          <div className="w-1.5 h-1.5 rounded-full bg-horizon" />
+          <div className="w-1.5 h-1.5 rounded-full bg-horizon/50" />
+          <div className="w-1.5 h-1.5 rounded-full bg-horizon/25" />
         </div>
 
         {/* Source attribution card */}
-        <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.03] p-5 sm:p-6 mb-8">
+        <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#3D3D3D] p-5 sm:p-6 mb-8">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#F59E0B]/10 flex items-center justify-center flex-shrink-0">
-                <Newspaper className="w-5 h-5 text-[#F59E0B]" />
+              <div className="w-10 h-10 rounded-full bg-horizon/10 flex items-center justify-center flex-shrink-0">
+                <Newspaper className="w-5 h-5 text-horizon" />
               </div>
               <div>
                 <p className="text-[13px] text-gray-500 dark:text-white/40 mb-0.5">
                   Originally reported by
                 </p>
-                <p className="text-[15px] font-semibold text-[#0F172A] dark:text-white">
+                <p className="text-[15px] font-semibold text-[#183153] dark:text-white">
                   {article.source?.name || "Unknown source"}
                 </p>
                 {article.source?.domain && (
@@ -230,12 +231,12 @@ export default async function ArticlePage({
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+              <InlineBookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? undefined, source: article.source?.name ?? undefined, published_at: article.published_at }} />
               <a
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors"
+                className="inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-horizon hover:text-horizon/80 transition-colors"
               >
                 Original
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -244,11 +245,13 @@ export default async function ArticlePage({
           </div>
         </div>
 
+        <CommentsSection articleId={article.id} />
+
         {/* Back to category */}
-        <div className="text-center pb-12">
+        <div className="text-center py-12">
           <Link
             href={article.topic ? `/topic/${article.topic.slug}` : "/"}
-            className="text-[13px] font-medium text-gray-400 dark:text-white/35 hover:text-[#F59E0B] transition-colors"
+            className="text-[13px] font-medium text-gray-400 dark:text-white/35 hover:text-horizon transition-colors"
           >
             ← More {article.topic?.name || "news"}
           </Link>

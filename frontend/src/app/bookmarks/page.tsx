@@ -51,11 +51,11 @@ function BookmarksContent() {
   const setTab = (tab: Tab) => router.push(`/bookmarks?tab=${tab}`);
 
   return (
-    <main className="flex-1 bg-white dark:bg-[#0a0a0a] min-h-screen">
+    <main className="flex-1 bg-[#F0F0EE] dark:bg-[#1E1E1E] min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-[#F59E0B] transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-horizon transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -63,7 +63,7 @@ function BookmarksContent() {
 
         <div className="flex items-center gap-3 mb-6">
           <img src="/bookmark-hover.svg" alt="" className="w-7 h-7" />
-          <h1 className="text-[1.8rem] sm:text-[2.2rem] font-semibold tracking-[-0.04em] text-[#0F172A] dark:text-white leading-none">
+          <h1 className="text-[1.8rem] sm:text-[2.2rem] font-semibold tracking-[-0.04em] text-[#183153] dark:text-white leading-none">
             Bookmarks
           </h1>
         </div>
@@ -75,8 +75,8 @@ function BookmarksContent() {
               onClick={() => setTab(tab)}
               className={`px-4 py-2.5 text-[13px] font-semibold capitalize transition-colors border-b-2 -mb-px ${
                 activeTab === tab
-                  ? "border-[#F59E0B] text-[#F59E0B]"
-                  : "border-transparent text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white/70"
+                  ? "border-horizon text-horizon"
+                  : "border-transparent text-gray-400 dark:text-white/40 hover:text-horizon"
               }`}
             >
               {tab === "saved"
@@ -106,18 +106,18 @@ function BookmarksContent() {
                 </h2>
                 <div className="space-y-0">
                   {stories.map((story) => (
-                    <div key={story.id} className="group flex gap-4 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0">
+                    <div key={story.id} className="group flex gap-4 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-horizon/[0.07] -mx-2 px-2 rounded-lg transition-colors">
                       <a href={`/story/${story.id}`} className="flex gap-4 items-start flex-1 min-w-0 hover:opacity-90 transition-opacity">
                         {story.image_url && (
-                          <div className="w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#2a2a2a]">
-                            <img src={story.image_url} alt={story.title} className="w-full h-full object-cover" />
+                          <div className="w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#3D3D3D]">
+                            <img src={story.image_url} alt={story.title ?? ""} className="w-full h-full object-cover" />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F59E0B]">{story.category}</span>
-                          <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#0F172A] dark:text-white line-clamp-2 mt-1">{story.title}</h3>
+                          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-horizon">{story.category}</span>
+                          <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#183153] dark:text-white group-hover:text-horizon line-clamp-2 transition-colors mt-1">{story.title}</h3>
                           <p className="mt-1.5 text-[11px] text-gray-400 dark:text-white/35">
-                            {story.source_count} sources · {story.country_count} countries · {timeAgo(story.created_at)}
+                            {story.source_count} sources · {story.country_count} countries · {story.created_at ? timeAgo(story.created_at) : ""}
                           </p>
                         </div>
                       </a>
@@ -141,16 +141,16 @@ function BookmarksContent() {
                 </h2>
                 <div className="space-y-0">
                   {articles.map((article) => (
-                    <div key={article.id} className="group flex gap-4 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0">
+                    <div key={article.id} className="group flex gap-4 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-horizon/[0.07] -mx-2 px-2 rounded-lg transition-colors">
                       <a href={`/article/${article.id}`} className="flex gap-4 items-start flex-1 min-w-0 hover:opacity-90 transition-opacity">
                         {article.image_url && (
-                          <div className="w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#2a2a2a]">
-                            <img src={article.image_url} alt={article.title} className="w-full h-full object-cover" />
+                          <div className="w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#3D3D3D]">
+                            <img src={article.image_url} alt={article.title ?? ""} className="w-full h-full object-cover" />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1.5">
-                            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F59E0B]">{article.topic || "News"}</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-horizon">{article.topic || "News"}</span>
                             {article.source && (
                               <>
                                 <span className="text-[10px] text-gray-300 dark:text-white/20">·</span>
@@ -158,7 +158,7 @@ function BookmarksContent() {
                               </>
                             )}
                           </div>
-                          <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#0F172A] dark:text-white line-clamp-2">{article.title}</h3>
+                          <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#183153] dark:text-white group-hover:text-horizon line-clamp-2 transition-colors">{article.title}</h3>
                           {article.published_at && (
                             <p className="mt-1.5 text-[11px] text-gray-400 dark:text-white/35">{timeAgo(article.published_at)}</p>
                           )}
@@ -206,25 +206,25 @@ function BookmarksContent() {
             {history.length > 0 && (
               <div className="space-y-0">
                 {history.map((item: HistoryItem) => (
-                  <div key={`${item.type}-${item.id}`} className="group flex gap-4 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0">
+                  <div key={`${item.type}-${item.id}`} className="group flex gap-4 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-horizon/[0.07] -mx-2 px-2 rounded-lg transition-colors">
                     <a
                       href={`/${item.type === "article" ? "article" : "story"}/${item.id}`}
                       className="flex gap-4 items-start flex-1 min-w-0 hover:opacity-90 transition-opacity"
                     >
                       {item.image_url && (
-                        <div className="w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#2a2a2a]">
+                        <div className="w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#3D3D3D]">
                           <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1.5">
                           {item.category && (
-                            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#F59E0B]">{item.category}</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-horizon">{item.category}</span>
                           )}
                           <span className="text-[10px] text-gray-300 dark:text-white/20">·</span>
                           <span className="text-[10px] text-gray-400 dark:text-white/40 capitalize">{item.type}</span>
                         </div>
-                        <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#0F172A] dark:text-white line-clamp-2">{item.title}</h3>
+                        <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#183153] dark:text-white group-hover:text-horizon line-clamp-2 transition-colors">{item.title}</h3>
                         <p className="mt-1.5 text-[11px] text-gray-400 dark:text-white/35">{timeAgo(item.visited_at)}</p>
                       </div>
                     </a>
