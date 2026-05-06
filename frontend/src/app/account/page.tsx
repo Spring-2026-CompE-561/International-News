@@ -176,7 +176,7 @@ export default function AccountPage() {
           </Link>
           <button
             onClick={() => { logout(); router.replace("/"); }}
-            className="inline-flex items-center gap-1.5 text-sm text-gray-400 dark:text-white/40 hover:text-red-500 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md border border-gray-300 dark:border-white/20 text-gray-500 dark:text-white/50 hover:border-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:border-red-500/50 dark:hover:text-red-400 transition-all duration-200 cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             Log out
