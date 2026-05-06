@@ -25,16 +25,13 @@ const columns = [
     links: [
       { label: "About Us", href: "/about" },
       { label: "Contact", href: "/contact" },
-      { label: "Careers", href: "#" },
-      { label: "Advertise", href: "#" },
     ],
   },
   {
     heading: "Legal",
     links: [
-      { label: "Terms of Service", href: "#" },
-      { label: "Privacy Policy", href: "#" },
-      { label: "Cookie Policy", href: "#" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" },
     ],
   },
 ];
@@ -89,9 +86,8 @@ export function Footer() {
             © {year} On The Horizon News. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <Link href="#" className="text-white/25 text-[11px] hover:text-horizon transition-colors">Terms</Link>
-            <Link href="#" className="text-white/25 text-[11px] hover:text-horizon transition-colors">Privacy</Link>
-            <Link href="#" className="text-white/25 text-[11px] hover:text-horizon transition-colors">Cookies</Link>
+            <Link href="/terms" className="text-white/25 text-[11px] hover:text-horizon transition-colors">Terms</Link>
+            <Link href="/privacy" className="text-white/25 text-[11px] hover:text-horizon transition-colors">Privacy</Link>
           </div>
         </div>
       </div>

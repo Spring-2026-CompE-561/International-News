@@ -23,13 +23,13 @@ export default function UserButton() {
     return (
       <Link
         href="/account"
-        className="group inline-flex items-center gap-1.5 h-8 px-2 rounded-lg hover:bg-muted transition-colors"
+        className="group inline-flex items-center gap-1.5 h-8 px-2 rounded-lg hover:bg-horizon/20 transition-colors"
         aria-label="Account"
       >
         <span className="w-5 h-5 rounded-full bg-horizon flex items-center justify-center text-black text-[9px] font-bold shrink-0">
           {initials}
         </span>
-        <span className="text-sm font-medium text-foreground">Account</span>
+        <span className="text-sm font-medium text-white/70 group-hover:text-horizon transition-colors">Account</span>
       </Link>
     );
   }
@@ -37,7 +37,7 @@ export default function UserButton() {
   return (
     <Link
       href="/login"
-      className="group inline-flex items-center h-8 px-2 rounded-lg hover:bg-muted transition-colors overflow-hidden"
+      className="group inline-flex items-center h-8 px-2 rounded-lg hover:bg-horizon/20 transition-colors overflow-hidden text-white/70 hover:text-horizon"
       aria-label="Sign in"
     >
       <User className="size-4 shrink-0" />

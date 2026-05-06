@@ -1,6 +1,9 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy.orm import joinedload
+
 from app.models.bookmark import Bookmark
+from app.models.article import Article
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -11,7 +14,16 @@ if TYPE_CHECKING:
 class BookmarkRepository:
     @staticmethod
     def get_by_user(db: "Session", user_id: int) -> list[Bookmark]:
-        return db.query(Bookmark).filter(Bookmark.user_id == user_id).all()
+        return (
+            db.query(Bookmark)
+            .filter(Bookmark.user_id == user_id)
+            .options(
+                joinedload(Bookmark.article).joinedload(Article.source),
+                joinedload(Bookmark.article).joinedload(Article.topic),
+                joinedload(Bookmark.topic_event),
+            )
+            .all()
+        )
 
     @staticmethod
     def get_by_id(db: "Session", bookmark_id: int) -> Bookmark | None:
