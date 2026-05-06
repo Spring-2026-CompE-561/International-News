@@ -1,11 +1,33 @@
 services:
 
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: horizon_news
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     env_file:
-      - ./backend/.env          # DATABASE_URL, API keys, SECRET_KEY, etc.
+      - path: ./backend/.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db/horizon_news
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
   frontend:
@@ -14,8 +36,10 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      # Points Next.js server-side fetches and the proxy rewrite at the backend container
       BACKEND_URL: http://backend:8000
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  postgres_data:
