@@ -75,7 +75,7 @@ function DesktopNavbar({ loggedIn }: { loggedIn: boolean }) {
 					{!loggedIn && (
 						<>
 							<Link
-								href="/signin"
+								href="/login"
 								aria-label="Sign in"
 								className="group inline-flex items-center h-8 px-2 rounded-lg text-sm font-medium text-white/70 hover:bg-horizon/20 hover:text-horizon transition-colors overflow-hidden"
 							>

@@ -23,8 +23,8 @@ const columns = [
   {
     heading: "About",
     links: [
-      { label: "About Us", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "About Us", href: "/about" },
+      { label: "Contact", href: "/contact" },
       { label: "Careers", href: "#" },
       { label: "Advertise", href: "#" },
     ],
