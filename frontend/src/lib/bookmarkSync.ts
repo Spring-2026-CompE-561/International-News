@@ -2,8 +2,9 @@
  * Server-side bookmark persistence.
  *
  * Strategy:
- * - localStorage remains the source of truth for display metadata (title, image, etc.)
- * - When the user is logged in, every toggle is also mirrored to the backend API
+ * - On login, bookmarks are loaded from the server and written into localStorage
+ *   so the rest of the UI can read them without auth headers on every render.
+ * - Every toggle is also mirrored to the backend API.
  * - A lightweight map (stored in localStorage) tracks backend bookmark IDs so we
  *   can issue the correct DELETE /bookmarks/{id} call later.
  *
@@ -14,13 +15,39 @@
 import { apiFetch } from "./client";
 import { isLoggedIn } from "./auth";
 
+interface SourceInBookmark { name: string }
+interface TopicInBookmark { name: string }
+interface ArticleInBookmark {
+  id: number;
+  title: string | null;
+  source: SourceInBookmark | null;
+  topic: TopicInBookmark | null;
+  image_url: string | null;
+  published_at: string | null;
+}
+interface StoryInBookmark {
+  id: number;
+  title: string | null;
+  category: string | null;
+  image_url: string | null;
+  source_count: number | null;
+  country_count: number | null;
+  created_at: string | null;
+}
 interface DbBookmark {
   id: number;
   article_id: number | null;
   topic_event_id: number | null;
 }
 
+interface DbBookmarkRich extends DbBookmark {
+  article: ArticleInBookmark | null;
+  topic_event: StoryInBookmark | null;
+}
+
 const MAP_KEY = "horizon-bm-server-ids";
+const ARTICLE_KEY = "horizon-bookmarks";
+const STORY_KEY = "horizon-story-bookmarks";
 
 type IdMap = Record<string, number>; // "article:123" | "story:456"  →  bookmark db id
 
@@ -48,17 +75,58 @@ function clearId(type: "article" | "story", contentId: number) {
   localStorage.setItem(MAP_KEY, JSON.stringify(map));
 }
 
-/** Pull all bookmarks from the server and rebuild the local ID map. Call on login. */
+/** Wipe all bookmark data from localStorage. Call on logout. */
+export function clearLocalBookmarkData(): void {
+  localStorage.removeItem(MAP_KEY);
+  localStorage.removeItem(ARTICLE_KEY);
+  localStorage.removeItem(STORY_KEY);
+  window.dispatchEvent(new Event("bookmarks-changed"));
+  window.dispatchEvent(new Event("story-bookmarks-changed"));
+}
+
+/** Pull all bookmarks from the server, rebuild localStorage and the ID map. Call on login. */
 export async function syncBookmarksFromServer(): Promise<void> {
   if (!isLoggedIn()) return;
   try {
-    const bookmarks = await apiFetch<DbBookmark[]>("/bookmarks");
+    const bookmarks = await apiFetch<DbBookmarkRich[]>("/bookmarks");
     const map: IdMap = {};
+    const articles = [];
+    const stories = [];
+
     for (const bm of bookmarks) {
-      if (bm.article_id)      map[mapKey("article", bm.article_id)]      = bm.id;
-      if (bm.topic_event_id)  map[mapKey("story",   bm.topic_event_id)]  = bm.id;
+      if (bm.article_id && bm.article) {
+        map[mapKey("article", bm.article_id)] = bm.id;
+        articles.push({
+          id: bm.article.id,
+          title: bm.article.title,
+          topic: bm.article.topic?.name ?? null,
+          source: bm.article.source?.name ?? null,
+          image_url: bm.article.image_url,
+          published_at: bm.article.published_at,
+        });
+      } else if (bm.topic_event_id && bm.topic_event) {
+        map[mapKey("story", bm.topic_event_id)] = bm.id;
+        stories.push({
+          id: bm.topic_event.id,
+          title: bm.topic_event.title,
+          category: bm.topic_event.category,
+          image_url: bm.topic_event.image_url,
+          source_count: bm.topic_event.source_count,
+          country_count: bm.topic_event.country_count,
+          created_at: bm.topic_event.created_at,
+        });
+      }
     }
+
     localStorage.setItem(MAP_KEY, JSON.stringify(map));
+    if (articles.length > 0) {
+      localStorage.setItem(ARTICLE_KEY, JSON.stringify(articles));
+      window.dispatchEvent(new Event("bookmarks-changed"));
+    }
+    if (stories.length > 0) {
+      localStorage.setItem(STORY_KEY, JSON.stringify(stories));
+      window.dispatchEvent(new Event("story-bookmarks-changed"));
+    }
   } catch {
     // silently fail — localStorage state is still valid
   }

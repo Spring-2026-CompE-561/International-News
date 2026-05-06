@@ -97,7 +97,7 @@ export function PersonalCollection() {
     };
   }, []);
 
-  if (!loggedIn && savedCount === 0 && historyCount === 0) return null;
+  if (!loggedIn) return null;
 
   return (
     <>

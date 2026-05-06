@@ -3,21 +3,29 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getBookmarkIds } from "@/lib/bookmarks";
 import { getStoryBookmarkIds } from "@/lib/storyBookmarks";
+import { isLoggedIn } from "@/lib/auth";
 
 export function NavBookmarkIcon() {
   const [count, setCount] = useState(0);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
+    setLoggedIn(isLoggedIn());
     const total = () => getBookmarkIds().length + getStoryBookmarkIds().length;
     setCount(total());
-    const handler = () => setCount(total());
-    window.addEventListener("bookmarks-changed", handler);
-    window.addEventListener("story-bookmarks-changed", handler);
+    const handleAuth = () => setLoggedIn(isLoggedIn());
+    const handleBookmarks = () => setCount(total());
+    window.addEventListener("auth-changed", handleAuth);
+    window.addEventListener("bookmarks-changed", handleBookmarks);
+    window.addEventListener("story-bookmarks-changed", handleBookmarks);
     return () => {
-      window.removeEventListener("bookmarks-changed", handler);
-      window.removeEventListener("story-bookmarks-changed", handler);
+      window.removeEventListener("auth-changed", handleAuth);
+      window.removeEventListener("bookmarks-changed", handleBookmarks);
+      window.removeEventListener("story-bookmarks-changed", handleBookmarks);
     };
   }, []);
+
+  if (!loggedIn) return null;
 
   return (
     <Link

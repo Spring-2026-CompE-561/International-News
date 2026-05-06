@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
-from app.schemas.bookmark import BookmarkCreate, BookmarkResponse
+from app.schemas.bookmark import BookmarkCreate, BookmarkResponse, BookmarkDetailResponse
 from app.schemas.user import User as UserSchema
 from app.services.bookmark import (
     get_bookmarks as fetch_bookmarks,
@@ -15,7 +15,7 @@ from app.services.bookmark import (
 api_router = APIRouter(prefix="/bookmarks", tags=["bookmarks"])
 
 
-@api_router.get("", response_model=list[BookmarkResponse])
+@api_router.get("", response_model=list[BookmarkDetailResponse])
 async def get_bookmarks(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserSchema, Depends(get_current_user)],

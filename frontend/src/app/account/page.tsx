@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Trash2, MessageSquare, Bookmark, Clock, User, LogOut } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
-import { getAuthHeaders, isLoggedIn, clearToken } from "@/lib/auth";
+import { getAuthHeaders, isLoggedIn } from "@/lib/auth";
 import { getBookmarks, toggleBookmark } from "@/lib/bookmarks";
 import { getStoryBookmarks, toggleStoryBookmark } from "@/lib/storyBookmarks";
 import { getReadingHistory, removeFromHistory, clearHistory, type HistoryItem } from "@/lib/readingHistory";
@@ -50,7 +50,7 @@ function FlagImg({ country }: { country: string | null }) {
 }
 
 export default function AccountPage() {
-  const { user, loading, refresh } = useUser();
+  const { user, loading, refresh, logout } = useUser();
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("profile");
 
@@ -117,7 +117,7 @@ export default function AccountPage() {
   }, [tab, user]);
 
   useEffect(() => {
-    if (!isLoggedIn()) router.replace("/login");
+    if (!isLoggedIn()) router.replace("/");
   }, [loading, user, router]);
 
   const handleSaveProfile = async (e: React.FormEvent<HTMLFormElement & EventTarget>) => {
@@ -175,7 +175,7 @@ export default function AccountPage() {
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <button
-            onClick={() => { clearToken(); router.replace("/login"); }}
+            onClick={() => { logout(); router.replace("/"); }}
             className="inline-flex items-center gap-1.5 text-sm text-gray-400 dark:text-white/40 hover:text-red-500 transition-colors"
           >
             <LogOut className="w-4 h-4" />
