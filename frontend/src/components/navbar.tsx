@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, UserRoundPlus } from "lucide-react";
+import { Menu, UserRoundPlus, Search } from "lucide-react";
 import { NavBookmarkIcon } from "@/components/NavBookmarkIcon";
 import { NavClock } from "@/components/NavClock";
 import { isLoggedIn } from "@/lib/auth";
@@ -49,6 +49,13 @@ function MobileNavbar() {
 					<LogoMobile />
 				</div>
 				<div className="flex items-center gap-2">
+					<Link
+						href="/search"
+						aria-label="Search"
+						className="group inline-flex items-center h-8 px-2 rounded-lg text-white/70 hover:bg-horizon/20 hover:text-horizon transition-colors"
+					>
+						<Search className="size-4" />
+					</Link>
 					<NavBookmarkIcon />
 					<ModeToggle />
 					<UserButton />
@@ -84,6 +91,16 @@ function DesktopNavbar({ loggedIn }: { loggedIn: boolean }) {
 							</span>
 						</Link>
 					)}
+					<Link
+						href="/search"
+						aria-label="Search"
+						className="group inline-flex items-center h-8 px-2 rounded-lg text-sm font-medium text-white/70 hover:bg-horizon/20 hover:text-horizon transition-colors overflow-hidden"
+					>
+						<Search className="size-4 shrink-0" />
+						<span className="max-w-0 overflow-hidden whitespace-nowrap pl-0 opacity-0 group-hover:max-w-[50px] group-hover:pl-1.5 group-hover:opacity-100 transition-all duration-200">
+							Search
+						</span>
+					</Link>
 					<NavBookmarkIcon />
 					<ModeToggle />
 					<UserButton />
