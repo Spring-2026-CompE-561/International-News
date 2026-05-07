@@ -45,7 +45,7 @@ function SearchContent() {
       .finally(() => setLoading(false));
   }, [q]);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmed = inputValue.trim();
     if (trimmed) {
@@ -82,7 +82,7 @@ function SearchContent() {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Search articles..."
               autoFocus
-              className="w-full pl-10 pr-9 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111111] text-[#183153] dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-horizon text-sm"
+              className="w-full pl-10 pr-9 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111111] text-[#183153] dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-horizon hover:border-horizon/60 dark:hover:border-horizon/60 transition-colors text-sm"
             />
             {inputValue && (
               <button
@@ -96,7 +96,7 @@ function SearchContent() {
           </div>
           <button
             type="submit"
-            className="px-5 py-2 rounded-xl bg-horizon text-black text-sm font-semibold hover:opacity-90 transition-opacity shrink-0"
+            className="px-5 py-2 rounded-xl bg-horizon text-black text-sm font-semibold hover:opacity-90 hover:ring-2 hover:ring-horizon/60 transition-all shrink-0"
           >
             Search
           </button>
@@ -124,7 +124,7 @@ function SearchContent() {
                 <a
                   key={article.id}
                   href={`/article/${article.id}`}
-                  className="group flex gap-4 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#111111] p-4 hover:border-horizon/40 transition-colors"
+                  className="group flex gap-4 border border-gray-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#111111] p-4 hover:border-horizon hover:ring-1 hover:ring-horizon/30 hover:scale-[1.02] transition-all"
                 >
                   {article.image_url && (
                     <div className="shrink-0 w-24 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5">
