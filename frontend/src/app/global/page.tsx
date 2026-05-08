@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { BookmarkButton } from "@/components/BookmarkButton";
 
 import { API_URL } from "@/lib/api";
@@ -13,6 +13,16 @@ interface Article {
   trending_score: number;
   source: { name: string; domain: string | null } | null;
   topic: { name: string } | null;
+  topic_event: {
+    id: number;
+    title: string;
+    hook: string | null;
+    dek: string | null;
+    quick_brief: string[] | null;
+    source_count: number;
+    country_count: number;
+    angles: { label: string; summary: string | null }[] | null;
+  } | null;
 }
 
 async function getGlobalArticles(): Promise<Article[]> {
@@ -47,62 +57,117 @@ export default async function GlobalPage() {
     year: "numeric",
   });
 
-  // Split into lead (top 2) and rest
-  const lead = articles.slice(0, 2);
-  const rest = articles.slice(2);
-
   return (
-    <main className="flex-1 bg-[#F0F0EE] dark:bg-[#1E1E1E]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <main className="flex-1 bg-[#F0F0EE] dark:bg-[#141414] min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-horizon transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back
+          Home
         </Link>
 
-        <div className="flex items-start justify-between gap-3 mb-6 sm:mb-8">
-          <div>
-            <h1 className="text-[1.8rem] sm:text-[2.2rem] lg:text-[2.6rem] font-semibold tracking-[-0.04em] text-[#183153] dark:text-white leading-none">
-              Global Top News
-            </h1>
-            <p className="mt-2 text-[14px] sm:text-[15px] text-gray-500 dark:text-white/50">
-              The most important articles from sources worldwide.
-            </p>
-          </div>
-          <span className="text-gray-600 dark:text-white/80 text-sm font-medium pt-2 shrink-0">
+        <div className="flex items-end justify-between gap-3 mb-8">
+          <h1 className="text-[1.6rem] sm:text-[2rem] lg:text-[2.4rem] font-semibold tracking-[-0.04em] text-[#183153] dark:text-white leading-none">
+            Global Top News
+          </h1>
+          <span className="text-gray-400 dark:text-white/40 text-sm font-medium shrink-0">
             {today}
           </span>
         </div>
 
-        {/* Lead stories — large cards */}
-        {lead.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 mb-8 sm:mb-10">
-            {lead.map((article) => (
-              <a
-                key={article.id}
-                href={`/article/${article.id}`}
-                className="group cursor-pointer"
-              >
-                <div className="relative overflow-hidden bg-gray-200 dark:bg-[#3D3D3D] aspect-[16/10] mb-3 sm:mb-4 rounded-[14px] group-hover:ring-2 group-hover:ring-horizon transition-all">
-                  {article.image_url && (
-                    <img
-                      src={article.image_url}
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+        {/* All articles — clean grid */}
+        <div className="space-y-8">
+          {articles.map((article, i) => (
+            <a
+              key={article.id}
+              href={`/story/${article.topic_event?.id || article.id}`}
+              className="group flex transition-all"
+            >
+              {/* Image */}
+              <div className="relative w-[45%] shrink-0 overflow-hidden min-h-[280px] rounded-xl">
+                {article.image_url && (
+                  <img
+                    src={article.image_url}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                  />
+                )}
+                <div className="absolute top-3 left-3">
+                  <span className="font-serif text-[2rem] font-black italic text-white drop-shadow-lg leading-none" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.3)" }}>
+                    {i + 1}
+                  </span>
+                </div>
+                <div className="absolute top-3 right-3 text-right">
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white drop-shadow-lg">
+                    Horizon News
+                  </span>
+                </div>
+                <div className="absolute bottom-3 left-3">
+                  <span className="bg-black/50 backdrop-blur-sm text-[9px] font-bold uppercase tracking-wider text-white/90 px-2 py-0.5 rounded-md">
+                    {article.topic?.name || "News"}
+                  </span>
+                </div>
+                <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
+              </div>
 
-                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
-                    <span className="inline-flex items-center rounded-full border border-white/15 bg-black/25 backdrop-blur-sm px-2.5 py-1 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80">
+              {/* Content */}
+              <div className="p-5 sm:p-7 flex flex-col justify-between flex-1">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-horizon">
                       {article.topic?.name || "News"}
+                    </span>
+                    <span className="text-gray-300 dark:text-white/15">·</span>
+                    <span className="text-[10px] text-gray-400 dark:text-white/35">
+                      {article.source?.name}
                     </span>
                   </div>
 
-                  <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 flex items-center gap-2 text-[10px] sm:text-[11px] text-white/70">
-                    {article.source && <span>{article.source.name}</span>}
+                  <h3 className="text-[20px] sm:text-[24px] font-bold leading-tight text-[#183153] dark:text-white group-hover:text-horizon transition-colors">
+                    {article.topic_event?.title || article.title}
+                  </h3>
+
+                  {article.topic_event?.dek && (
+                    <p className="text-[14px] sm:text-[15px] text-gray-500 dark:text-white/50 leading-relaxed mt-3">
+                      {article.topic_event.dek}
+                    </p>
+                  )}
+
+                  {/* Story Overview bullets */}
+                  {article.topic_event?.quick_brief && article.topic_event.quick_brief.length > 0 && (
+                    <ul className="mt-3 space-y-1.5">
+                      {article.topic_event.quick_brief.slice(0, 3).map((bullet, j) => (
+                        <li key={j} className="flex items-start gap-2 text-[13px] text-gray-600 dark:text-white/45 leading-snug">
+                          <span className="text-horizon mt-0.5">•</span>
+                          <span className="line-clamp-1">{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="mt-4">
+                  {/* Country perspectives */}
+                  {article.topic_event?.angles && article.topic_event.angles.length > 0 && (
+                    <div className="flex gap-2 mb-4 flex-wrap">
+                      {article.topic_event.angles.slice(0, 4).map((angle, j) => (
+                        <span key={j} className="text-[10px] font-medium px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-white/40 border border-gray-200 dark:border-white/[0.08]">
+                          {angle.label}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3 text-[11px] text-gray-400 dark:text-white/35">
+                    {article.topic_event && (
+                      <>
+                        <span>{article.topic_event.source_count} sources</span>
+                        <span>·</span>
+                        <span>{article.topic_event.country_count} countries</span>
+                      </>
+                    )}
                     {article.published_at && (
                       <>
                         <span>·</span>
@@ -110,58 +175,6 @@ export default async function GlobalPage() {
                       </>
                     )}
                   </div>
-                  <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
-                </div>
-
-                <h3 className="text-[1.1rem] sm:text-[1.3rem] lg:text-[1.5rem] font-semibold tracking-[-0.04em] leading-[1.05] text-[#183153] dark:text-white group-hover:text-horizon transition-colors">
-                  {article.title}
-                </h3>
-              </a>
-            ))}
-          </div>
-        )}
-
-        {/* Divider */}
-        <div className="h-px bg-gray-200 dark:bg-white/10 mb-6 sm:mb-8" />
-
-        {/* Rest of articles — list */}
-        <div className="space-y-4">
-          {rest.map((article) => (
-            <a
-              key={article.id}
-              href={`/article/${article.id}`}
-              className="group flex gap-4 sm:gap-5 items-start py-4 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-horizon/[0.07] -mx-3 px-3 rounded-lg transition-colors"
-            >
-              {article.image_url && (
-                <div className="relative w-28 h-20 sm:w-36 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-[#3D3D3D]">
-                  <img
-                    src={article.image_url}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <BookmarkButton article={{ id: article.id, title: article.title, image_url: article.image_url, topic: article.topic?.name ?? null, source: article.source?.name ?? null, published_at: article.published_at }} />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-horizon">
-                    {article.topic?.name || "News"}
-                  </span>
-                  {article.source && (
-                    <>
-                      <span className="text-[10px] text-gray-300 dark:text-white/20">·</span>
-                      <span className="text-[10px] text-gray-400 dark:text-white/40">
-                        {article.source.name}
-                      </span>
-                    </>
-                  )}
-                </div>
-                <h3 className="text-[15px] sm:text-[17px] font-semibold leading-snug text-[#183153] dark:text-white group-hover:text-horizon transition-colors line-clamp-2">
-                  {article.title}
-                </h3>
-                <div className="flex items-center gap-2 mt-1.5 text-[11px] text-gray-400 dark:text-white/35">
-                  {article.published_at && <span>{timeAgo(article.published_at)}</span>}
-                  <ExternalLink className="w-3 h-3" />
                 </div>
               </div>
             </a>
