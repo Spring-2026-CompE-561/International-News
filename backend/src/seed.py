@@ -57,6 +57,33 @@ COUNTRIES_CONFIG = {
     "MX": {"name": "Mexico", "language": "es", "region": "North America"},
 }
 
+# Map known publishers to their real country code
+# Overrides the feed's default country when we detect the real publisher
+PUBLISHER_COUNTRY = {
+    "asia news network": "IN", "asia times": "CN", "south china morning post": "CN",
+    "scmp": "CN", "straits times": "SG", "channel news asia": "SG",
+    "japan times": "JP", "nhk": "JP", "nikkei": "JP", "mainichi": "JP",
+    "korea herald": "KR", "korea times": "KR", "yonhap": "KR",
+    "times of india": "IN", "hindustan times": "IN", "ndtv": "IN", "the hindu": "IN",
+    "dawn": "PK", "geo news": "PK",
+    "al jazeera": "AE", "arab news": "SA", "gulf news": "AE",
+    "haaretz": "IL", "jerusalem post": "IL", "times of israel": "IL",
+    "france24": "FR", "france 24": "FR", "le monde": "FR", "afp": "FR",
+    "dw": "DE", "deutsche welle": "DE", "der spiegel": "DE",
+    "bbc": "GB", "the guardian": "GB", "telegraph": "GB", "sky news": "GB",
+    "reuters": "GB", "financial times": "GB",
+    "abc australia": "AU", "abc news australia": "AU", "sydney morning herald": "AU",
+    "cbc": "CA", "globe and mail": "CA", "toronto star": "CA",
+    "efe": "ES", "el pais": "ES",
+    "ansa": "IT", "la repubblica": "IT",
+    "tass": "RU", "rt": "RU",
+    "xinhua": "CN", "global times": "CN", "cgtn": "CN",
+    "daily maverick": "ZA", "news24": "ZA",
+    "buenos aires times": "AR",
+    "mexico news daily": "MX",
+    "un news": "US", "united nations": "US",
+}
+
 CATEGORY_NAMES = {
     "world": "World & Conflict",
     "business": "Business & Economy",
@@ -659,10 +686,17 @@ def fetch_all_articles():
                 for item in resp.json().get("articles", []):
                     title = item.get("title", "").strip()
                     if title and len(title) > 15:
+                        gdelt_domain = item.get("domain", "")
+                        gdelt_cc = (item.get("sourcecountry", "US") or "US")[:2].upper()
+                        # Override country if we recognize the domain
+                        for pub_name, pub_cc in PUBLISHER_COUNTRY.items():
+                            if pub_name.replace(" ", "") in gdelt_domain.lower():
+                                gdelt_cc = pub_cc
+                                break
                         articles.append({
                             "title": title, "url": item.get("url", ""),
-                            "source_name": item.get("domain", "Unknown"), "domain": item.get("domain", ""),
-                            "country_code": (item.get("sourcecountry", "US") or "US")[:2].upper(),
+                            "source_name": gdelt_domain, "domain": gdelt_domain,
+                            "country_code": gdelt_cc,
                             "published_at": item.get("seendate", ""), "image_url": item.get("socialimage", ""),
                             "known_category": "", "source_type": "gdelt",
                         })
@@ -930,10 +964,17 @@ def fetch_all_articles():
                     image = entry.media_content[0].get("url", "")
                 elif hasattr(entry, "media_thumbnail") and entry.media_thumbnail:
                     image = entry.media_thumbnail[0].get("url", "")
+                # Override country code if we recognize the publisher
+                real_cc = cc
+                if source_name:
+                    pub_lower = source_name.lower().strip()
+                    if pub_lower in PUBLISHER_COUNTRY:
+                        real_cc = PUBLISHER_COUNTRY[pub_lower]
+
                 articles.append({
                     "title": title, "url": link,
                     "source_name": source_name, "domain": domain or f"{name.split(' ')[0].lower()}.com",
-                    "country_code": cc, "published_at": entry.get("published", ""),
+                    "country_code": real_cc, "published_at": entry.get("published", ""),
                     "image_url": image, "known_category": cat, "source_type": "rss",
                 })
         except Exception:
@@ -1534,7 +1575,7 @@ def main():
                     {
                         "label": country_name,
                         "type": "country",
-                        "summary": f"{info['source']} reports: {info['headline'][:80]}",
+                        "summary": info['headline'][:100],
                         "source_names": [info["source"]],
                     }
                     for country_name, info in list(cluster_countries.items())[:5]

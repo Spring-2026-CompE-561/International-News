@@ -95,42 +95,45 @@ function StoryRow({ title, stories }: { title: string; stories: Story[] }) {
   if (stories.length === 0) return null;
 
   return (
-    <section className="mb-8">
+    <section className="mb-6">
       <h3 className="text-sm font-bold uppercase tracking-[0.15em] text-white/50 mb-3 px-1">
         {title}
       </h3>
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {stories.map((story) => (
           <Link
             key={story.id}
             href={`/story/${story.id}`}
-            className="group shrink-0 w-[250px] sm:w-[280px]"
+            className="group shrink-0 w-[42%] min-w-[400px]"
           >
-            <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+            {/* Thumbnail */}
+            <div className="relative aspect-video rounded-xl overflow-hidden bg-[#1a1a2e]">
               {story.image_url && (
                 <img
                   src={story.image_url}
                   alt=""
-                  className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300"
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+              <div className="absolute top-3 right-3 text-right">
+                <span className="text-[12px] font-semibold uppercase tracking-[0.25em] text-white drop-shadow-lg block">
+                  Horizon News
+                </span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-horizon drop-shadow-lg block mt-0.5">
+                  Story
+                </span>
+              </div>
+            </div>
 
-              <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end items-start px-3 pb-3 pt-6 h-[45%]">
-                <h4 className="font-serif text-base sm:text-lg font-bold leading-tight text-white group-hover:text-[#F5D08A] transition-colors drop-shadow-lg line-clamp-2">
-                  {story.title}
-                </h4>
-                {cleanHook(story.hook) && cleanHook(story.hook) !== story.title && (
-                  <p className="mt-2 text-[13px] text-white/55 leading-snug line-clamp-2 drop-shadow-md">
-                    {cleanHook(story.hook)}
-                  </p>
-                )}
-                <div className="flex items-center gap-2 mt-auto pt-3 text-[11px] text-white/40 font-medium">
-                  <span>{timeAgo(story.created_at)}</span>
-                  {story.source_count > 1 && (
-                    <span>· {story.source_count} sources</span>
-                  )}
-                </div>
+            {/* Info below thumbnail */}
+            <div className="mt-2.5">
+              <h4 className="text-[15px] sm:text-[16px] font-semibold leading-snug text-white group-hover:text-horizon transition-colors line-clamp-2">
+                {story.title}
+              </h4>
+              <div className="flex items-center gap-1.5 mt-2 text-[12px] text-white/40">
+                <span>{story.category}</span>
+                <span>·</span>
+                <span>{timeAgo(story.created_at)}</span>
               </div>
             </div>
           </Link>
@@ -169,12 +172,13 @@ export default async function TopicPage({
   const top5 = stories.slice(1, 6) as Story[];
   const remaining = stories.slice(6);
 
-  // Split remaining into rows
-  const rowSize = Math.max(Math.ceil(remaining.length / config.rows.length), 4);
-  const rows = config.rows.map((name, i) => ({
-    name,
-    stories: remaining.slice(i * rowSize, (i + 1) * rowSize),
-  }));
+  // Split remaining into 3 rows
+  const third = Math.ceil(remaining.length / 3);
+  const rows = [
+    { name: config.rows[0], stories: remaining.slice(0, third) },
+    { name: config.rows[1] || "More Stories", stories: remaining.slice(third, third * 2) },
+    { name: config.rows[2] || "Also Trending", stories: remaining.slice(third * 2) },
+  ].filter(r => r.stories.length > 0);
 
   return (
     <main className="flex-1 bg-[#0a0a0a] min-h-screen">
