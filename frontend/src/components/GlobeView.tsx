@@ -124,7 +124,7 @@ export function GlobeView({ markers }: Props) {
   return (
     <div className="flex flex-col lg:flex-row h-full">
       {/* Globe — full sphere, centered */}
-      <div className="flex-1 flex items-center justify-center bg-white dark:bg-[#0d0d0d] p-0 relative max-w-[420px] mx-auto">
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-[#0d0d0d] p-0 relative max-w-[440px] mx-auto">
         <GlobeInteractive
           markers={markers}
           isDark={isDark}
