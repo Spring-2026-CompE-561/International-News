@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "cobe": "^2.0.1",
+    "motion": "^12.38.0"
+  }
+}
