@@ -140,6 +140,17 @@ def get_article_by_id(db: Session, article_id: int):
             article.body = generated["body"]
         if generated["summary"] and (not article.summary or article.summary == article.title):
             article.summary = generated["summary"]
+
+        # If AI failed, build basic content from what we have
+        if not article.body:
+            topic_name = article.topic.name if article.topic else "News"
+            source_name = article.source.name if article.source else "Unknown"
+            article.body = (
+                f"This story is developing. {source_name} reports on this {topic_name.lower()} story.\n\n"
+                f"{article.title}.\n\n"
+                f"For the full report, visit the original source."
+            )
+
         db.commit()
         db.refresh(article)
 

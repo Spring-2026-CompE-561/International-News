@@ -184,7 +184,7 @@ export default async function ArticlePage({
           </p>
         )}
 
-        {/* Drop cap + body */}
+        {/* Body */}
         {article.body && (
           <div className="mb-12">
             {article.body.split("\n\n").map((paragraph, i) => {
