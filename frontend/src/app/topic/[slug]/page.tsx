@@ -35,7 +35,7 @@ async function getStoriesForCategory(categoryName: string) {
     );
     if (!res.ok) return [];
     const stories: Story[] = await res.json();
-    return stories.filter((s) => s.title.length > 15);
+    return stories.filter((s) => s.title.length > 15 && s.hook);
   } catch {
     return [];
   }

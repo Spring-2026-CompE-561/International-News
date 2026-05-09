@@ -10,6 +10,7 @@ import { Menu, UserRoundPlus, Search } from "lucide-react";
 import { NavBookmarkIcon } from "@/components/NavBookmarkIcon";
 import { NavClock } from "@/components/NavClock";
 import { isLoggedIn } from "@/lib/auth";
+import { GlobeDropdown } from "@/components/GlobeDropdown";
 
 export function Navbar() {
 	const [loggedIn, setLoggedIn] = useState(false);
@@ -70,7 +71,7 @@ function DesktopNavbar({ loggedIn }: { loggedIn: boolean }) {
 		<div className="sticky top-0 z-50 hidden border-b border-white/10 bg-gradient-to-b from-[#0e1f33] to-[#122947] dark:to-[#183153] md:block transition-colors">
 			<nav className="max-w-7xl mx-auto relative flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
 				<div className="flex items-center gap-4">
-					<LogoMobile />
+					<GlobeDropdown />
 					<NavClock />
 				</div>
 				<Link href="/" className="absolute left-1/2 -translate-x-1/2">
